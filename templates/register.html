@@ -1,0 +1,269 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registration - Alumni Connect</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: white;
+      width: 700px;
+      border-radius: 10px;
+      padding: 30px 40px;
+      box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .messages {
+      margin-bottom: 20px;
+    }
+
+    .messages li {
+      list-style: none;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .role-toggle {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .role-toggle button {
+      background: #eaeaea;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 6px;
+      margin: 0 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .role-toggle button.selected {
+      background: #4ca1af;
+      color: white;
+      box-shadow: 0 3px 8px rgba(76,161,175,0.3);
+    }
+
+    .form-group {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+      color: #444;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 15px;
+      transition: all 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #4ca1af;
+      box-shadow: 0 0 3px rgba(76,161,175,0.4);
+      outline: none;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 38px;
+      cursor: pointer;
+      color: #888;
+    }
+
+    .password-toggle:hover {
+      color: #4ca1af;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 14px;
+      background: #4ca1af;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 17px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+
+    button[type="submit"]:hover {
+      background: #2c3e50;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .login-link a {
+      color: #4ca1af;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Registration</h2>
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li style="color:{% if message.tags == 'error' %}red{% else %}green{% endif %};">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <div class="role-toggle">
+      <button type="button" id="student-toggle" class="selected">Student</button>
+      <button type="button" id="teacher-toggle">Teacher</button>
+    </div>
+
+    <form method="POST" action="{% url 'register' %}" enctype="multipart/form-data" id="registrationForm">
+      {% csrf_token %}
+      <input type="hidden" name="role" id="role" value="student">
+
+      <!-- Student Form -->
+      <div id="studentForm">
+        <div class="form-group"><label>Full Name</label><input type="text" name="student_name" required></div>
+        <div class="form-group"><label>Email</label><input type="email" name="student_email" required></div>
+        <div class="form-group"><label>Password</label><input type="password" name="password" id="password" required><i class="fa-solid fa-eye password-toggle" id="togglePassword"></i></div>
+        <div class="form-group"><label>Confirm Password</label><input type="password" name="confirm_password" id="confirm_password" required><i class="fa-solid fa-eye password-toggle" id="toggleConfirmPassword"></i></div>
+        <div class="form-group"><label>Roll Number</label><input type="text" name="student_roll" required></div>
+        <div class="form-group"><label>Department</label>
+          <select name="student_dept" required>
+            <option value="" disabled selected>Select department</option>
+            <option>Computer Science</option>
+            <option>Information Technology</option>
+            <option>Electronics</option>
+            <option>Mechanical</option>
+            <option>Civil</option>
+            <option>MCA</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Year of Passing</label><input type="number" name="student_year" required></div>
+        <div class="form-group"><label>Phone Number</label><input type="tel" name="student_phone" required></div>
+        <div class="form-group"><label>Profile Photo</label><input type="file" name="student_photo" accept="image/*"></div>
+      </div>
+
+      <!-- Teacher Form -->
+      <div id="teacherForm" style="display:none;">
+        <div class="form-group"><label>Faculty ID</label><input type="text" name="faculty_id"></div>
+        <div class="form-group"><label>Email</label><input type="email" name="teacher_email"></div>
+        <div class="form-group"><label>Password</label><input type="password" name="teacher_password" id="teacher_password"><i class="fa-solid fa-eye password-toggle" id="toggleTeacherPassword"></i></div>
+        <div class="form-group"><label>Confirm Password</label><input type="password" name="teacher_confirm_password" id="teacher_confirm_password"><i class="fa-solid fa-eye password-toggle" id="toggleTeacherConfirmPassword"></i></div>
+        <div class="form-group"><label>Designation</label><input type="text" name="designation"></div>
+        <div class="form-group"><label>Department</label>
+          <select name="department">
+            <option value="" disabled selected>Select department</option>
+            <option>Computer Science</option>
+            <option>Information Technology</option>
+            <option>Electronics</option>
+            <option>Mechanical</option>
+            <option>Civil</option>
+            <option>MCA</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Qualification</label><input type="text" name="qualification"></div>
+        <div class="form-group"><label>Experience (Years)</label><input type="number" name="experience"></div>
+        <div class="form-group"><label>Date Joined</label><input type="date" name="date_joined"></div>
+        <div class="form-group"><label>Status</label>
+          <select name="status">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Phone Number</label><input type="tel" name="teacher_phone"></div>
+        <div class="form-group"><label>Profile Photo</label><input type="file" name="teacher_photo" accept="image/*"></div>
+      </div>
+
+      <button type="submit">Register</button>
+    </form>
+
+    <div class="login-link">
+      Already have an account? <a href="{% url 'login' %}">Login here</a>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const studentToggle = document.getElementById('student-toggle');
+      const teacherToggle = document.getElementById('teacher-toggle');
+      const studentForm = document.getElementById('studentForm');
+      const teacherForm = document.getElementById('teacherForm');
+      const roleInput = document.getElementById('role');
+
+      studentToggle.addEventListener('click', () => {
+        studentForm.style.display = 'block';
+        teacherForm.style.display = 'none';
+        studentToggle.classList.add('selected');
+        teacherToggle.classList.remove('selected');
+        roleInput.value = 'student';
+      });
+
+      teacherToggle.addEventListener('click', () => {
+        studentForm.style.display = 'none';
+        teacherForm.style.display = 'block';
+        teacherToggle.classList.add('selected');
+        studentToggle.classList.remove('selected');
+        roleInput.value = 'teacher';
+      });
+
+      function togglePassword(toggleId, inputId) {
+        const toggle = document.getElementById(toggleId);
+        const input = document.getElementById(inputId);
+        toggle?.addEventListener('click', () => {
+          input.type = input.type === 'password' ? 'text' : 'password';
+          toggle.classList.toggle('fa-eye-slash');
+        });
+      }
+
+      togglePassword('togglePassword', 'password');
+      togglePassword('toggleConfirmPassword', 'confirm_password');
+      togglePassword('toggleTeacherPassword', 'teacher_password');
+      togglePassword('toggleTeacherConfirmPassword', 'teacher_confirm_password');
+    });
+  </script>
+</body>
+</html>

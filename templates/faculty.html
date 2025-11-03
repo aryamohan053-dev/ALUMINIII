@@ -1,0 +1,1016 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alumni Connect - Register</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #333;
+      overflow: hidden;
+      padding: 20px;
+    }
+
+    /* Animated background elements */
+    .bg-bubbles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .bg-bubbles li {
+      position: absolute;
+      list-style: none;
+      display: block;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.15);
+      bottom: -160px;
+      border-radius: 50%;
+      animation: square 25s linear infinite;
+    }
+
+    .bg-bubbles li:nth-child(1) {
+      left: 10%;
+      animation-delay: 0s;
+      width: 80px;
+      height: 80px;
+    }
+
+    .bg-bubbles li:nth-child(2) {
+      left: 20%;
+      animation-delay: 2s;
+      animation-duration: 17s;
+      width: 60px;
+      height: 60px;
+    }
+
+    .bg-bubbles li:nth-child(3) {
+      left: 25%;
+      animation-delay: 4s;
+      width: 70px;
+      height: 70px;
+    }
+
+    .bg-bubbles li:nth-child(4) {
+      left: 40%;
+      animation-delay: 0s;
+      animation-duration: 22s;
+      width: 90px;
+      height: 90px;
+    }
+
+    .bg-bubbles li:nth-child(5) {
+      left: 70%;
+      width: 50px;
+      height: 50px;
+    }
+
+    .bg-bubbles li:nth-child(6) {
+      left: 80%;
+      animation-delay: 3s;
+      width: 100px;
+      height: 100px;
+    }
+
+    .bg-bubbles li:nth-child(7) {
+      left: 32%;
+      animation-delay: 7s;
+      width: 65px;
+      height: 65px;
+    }
+
+    .bg-bubbles li:nth-child(8) {
+      left: 55%;
+      animation-delay: 15s;
+      animation-duration: 20s;
+      width: 45px;
+      height: 45px;
+    }
+
+    .bg-bubbles li:nth-child(9) {
+      left: 25%;
+      animation-delay: 2s;
+      animation-duration: 20s;
+      width: 85px;
+      height: 85px;
+    }
+
+    .bg-bubbles li:nth-child(10) {
+      left: 90%;
+      animation-delay: 11s;
+      width: 55px;
+      height: 55px;
+    }
+
+    .container {
+      display: flex;
+      width: 900px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+      position: relative;
+      z-index: 10;
+      animation: containerSlide 0.8s ease-out;
+    }
+
+    .left-panel {
+      flex: 1;
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      color: white;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.1) 0%,
+        transparent 70%
+      );
+      animation: pulse 8s infinite alternate;
+    }
+
+    .left-panel h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      position: relative;
+      animation: fadeInLeft 1s ease-out;
+    }
+
+    .left-panel p {
+      line-height: 1.6;
+      margin-bottom: 30px;
+      position: relative;
+      animation: fadeInLeft 1.2s ease-out;
+    }
+
+    .right-panel {
+      flex: 1.5;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    .logo h1 {
+      font-size: 32px;
+      color: #2575fc;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo i {
+      font-size: 40px;
+      color: #2575fc;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #2575fc;
+      font-size: 28px;
+      position: relative;
+      padding-bottom: 15px;
+      animation: fadeIn 1s ease-out;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(90deg, #6a11cb, #2575fc);
+      border-radius: 3px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+      animation: fadeInRight 0.8s ease-out;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #555;
+      cursor: pointer;
+    }
+
+    /* Icon inside inputs */
+    .form-group .input-icon {
+      position: absolute;
+      left: 15px;
+      top: 38px;
+      color: #777;
+      transition: all 0.3s;
+      pointer-events: none;
+      font-size: 18px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 38px;
+      color: #777;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 18px;
+    }
+
+    .password-toggle:hover {
+      color: #2575fc;
+    }
+
+    input[type='text'],
+    input[type='email'],
+    input[type='number'],
+    input[type='password'],
+    select,
+    textarea,
+    input[type='file'] {
+      width: 100%;
+      padding: 12px 15px 12px 40px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: all 0.3s;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    input[type='file'] {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+
+    input[type='file']::file-selector-button {
+      background: #2575fc;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      margin-right: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    input[type='file']::file-selector-button:hover {
+      background: #6a11cb;
+    }
+
+    input[type='text']:focus,
+    input[type='email']:focus,
+    input[type='number']:focus,
+    input[type='password']:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #2575fc;
+      box-shadow: 0 0 0 2px rgba(37, 117, 252, 0.2);
+      outline: none;
+      transform: translateY(-2px);
+    }
+
+    input[type='text']:focus + .input-icon,
+    input[type='email']:focus + .input-icon,
+    input[type='number']:focus + .input-icon,
+    input[type='password']:focus + .input-icon,
+    select:focus + .input-icon {
+      color: #2575fc;
+      transform: scale(1.2);
+    }
+
+    textarea {
+      resize: none;
+      height: 80px;
+      padding-left: 15px !important;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      user-select: none;
+      position: relative;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .radio-option:hover,
+    .radio-option:focus-within {
+      background: rgba(255, 255, 255, 1);
+      transform: translateY(-2px);
+      border-color: rgba(37, 117, 252, 0.3);
+      outline: none;
+    }
+
+    .radio-option.selected {
+      border-color: #2575fc;
+      background: rgba(255, 255, 255, 1);
+    }
+
+    input[type='radio'] {
+      width: auto;
+      margin-right: 8px;
+      accent-color: #2575fc;
+      cursor: pointer;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 14px;
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      border: none;
+      border-radius: 7px;
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(37, 117, 252, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.5);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1, 1) translate(-50%);
+      transform-origin: 50% 50%;
+    }
+
+    button:focus:not(:active)::after {
+      animation: ripple 1s ease-out;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 15px;
+      color: #555;
+    }
+
+    .login-link a {
+      color: #2575fc;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .login-link a:hover {
+      color: #6a11cb;
+      text-decoration: underline;
+    }
+
+    /* Form validation styles */
+    .form-group.error input,
+    .form-group.error select,
+    .form-group.error textarea {
+      border-color: #e74c3c;
+      box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
+    }
+
+    .form-group.success input,
+    .form-group.success select,
+    .form-group.success textarea {
+      border-color: #2ecc71;
+      box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
+    }
+
+    .error-message {
+      color: #e74c3c;
+      font-size: 13px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .success-message {
+      color: #2ecc71;
+      font-size: 13px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .form-group.error .error-message {
+      display: block;
+    }
+
+    .form-group.success .success-message {
+      display: block;
+    }
+
+    /* Loading state */
+    .loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      border-right-color: transparent;
+      animation: spin 1s linear infinite;
+    }
+
+    /* Animations */
+    @keyframes square {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-1000px) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    @keyframes containerSlide {
+      0% {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeInLeft {
+      0% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes fadeInRight {
+      0% {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInDown {
+      0% {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.7;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes ripple {
+      0% {
+        opacity: 0.5;
+        transform: scale(0.8);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.2);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 950px) {
+      .container {
+        flex-direction: column;
+        width: 100%;
+        max-height: 100vh;
+        height: auto;
+      }
+
+      .left-panel,
+      .right-panel {
+        flex: unset;
+        width: 100%;
+        padding: 25px 30px;
+      }
+
+      .left-panel {
+        border-radius: 15px 15px 0 0;
+      }
+
+      .right-panel {
+        border-radius: 0 0 15px 15px;
+      }
+
+      .form-group .input-icon {
+        top: 38px;
+        font-size: 16px;
+      }
+
+      .radio-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <ul class="bg-bubbles">
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+  </ul>
+
+  <div class="container">
+    <div class="left-panel" aria-hidden="true">
+      <h2>Alumni Connect</h2>
+      <p>Connecting alumni for a stronger community and brighter future. Register now to join and share your journey with fellow graduates.</p>
+    </div>
+
+    <div class="right-panel" role="main">
+      <div class="logo" aria-label="Alumni Connect Logo">
+        <i class="fa-solid fa-users"></i>
+        <h1>Alumni Connect</h1>
+      </div>
+
+      <h2>Register</h2>
+
+      <form id="registrationForm" method="POST" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        <!-- Photo -->
+        <div class="form-group">
+          <label for="photo">
+            <i class="fa-solid fa-image"></i> Upload Your Photo
+          </label>
+          <input
+            type="file"
+            id="photo"
+            name="photo"
+            accept="image/*"
+            aria-describedby="photoHelp"
+          />
+          <small id="photoHelp" style="color:#888; font-size:12px;">(Optional, JPG/PNG max 2MB)</small>
+          <div class="error-message" id="photo-error"></div>
+        </div>
+
+        <!-- Full Name -->
+        <div class="form-group">
+          <label for="full_name">
+            <i class="fa-solid fa-user"></i> Full Name <sup style="color:#e00">*</sup>
+          </label>
+          <input
+            type="text"
+            id="full_name"
+            name="full_name"
+            placeholder="Enter your full name"
+            required
+            aria-required="true"
+            autocomplete="name"
+          />
+          
+          <div class="error-message" id="full_name-error"></div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">
+            <i class="fa-solid fa-envelope"></i> Email <sup style="color:#e00">*</sup>
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter your email address"
+            required
+            aria-required="true"
+            autocomplete="email"
+          />
+          
+          <div class="error-message" id="email-error"></div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password">
+            <i class="fa-solid fa-lock"></i> Password <sup style="color:#e00">*</sup>
+          </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Create a password"
+            required
+            aria-required="true"
+            autocomplete="new-password"
+          />
+         
+          <i class="fa-solid fa-eye password-toggle" id="togglePassword"></i>
+          <div class="error-message" id="password-error"></div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <label for="confirm_password">
+            <i class="fa-solid fa-lock"></i> Confirm Password <sup style="color:#e00">*</sup>
+          </label>
+          <input
+            type="password"
+            id="confirm_password"
+            name="confirm_password"
+            placeholder="Confirm your password"
+            required
+            aria-required="true"
+            autocomplete="new-password"
+          />
+         
+          <i class="fa-solid fa-eye password-toggle" id="toggleConfirmPassword"></i>
+          <div class="error-message" id="confirm_password-error"></div>
+        </div>
+
+        <!-- Gender -->
+        <fieldset class="form-group" style="margin-bottom: 20px;">
+          <legend>
+            <i class="fa-solid fa-venus-mars"></i> Gender <sup style="color:#e00">*</sup>
+          </legend>
+          <div class="radio-group" role="radiogroup" aria-required="true" aria-labelledby="gender-legend">
+            <label class="radio-option" for="gender_male" tabindex="0">
+              <input type="radio" id="gender_male" name="gender" value="Male" required />
+              <i class="fa-solid fa-mars"></i> Male
+            </label>
+            <label class="radio-option" for="gender_female" tabindex="0">
+              <input type="radio" id="gender_female" name="gender" value="Female" />
+              <i class="fa-solid fa-venus"></i> Female
+            </label>
+            <label class="radio-option" for="gender_other" tabindex="0">
+              <input type="radio" id="gender_other" name="gender" value="Other" />
+              <i class="fa-solid fa-genderless"></i> Other
+            </label>
+          </div>
+          <div class="error-message" id="gender-error"></div>
+        </fieldset>
+
+        <!-- Address -->
+        <div class="form-group">
+          <label for="address">
+            <i class="fa-solid fa-location-dot"></i> Address
+          </label>
+          <textarea
+            id="address"
+            name="address"
+            placeholder="Enter your address"
+            rows="3"
+            aria-multiline="true"
+          ></textarea>
+          
+          <div class="error-message" id="address-error"></div>
+        </div>
+
+        <!-- Course -->
+        <div class="form-group">
+          <label for="course">
+            <i class="fa-solid fa-graduation-cap"></i> Course <sup style="color:#e00">*</sup>
+          </label>
+          <select id="course" name="course" required aria-required="true">
+            <option value="" disabled selected>Select your course</option>
+            <option value="BCA">BCA</option>
+            <option value="MCA">MCA</option>
+            <option value="BBA">BBA</option>
+            <option value="MBA">MBA</option>
+          </select>
+          
+          <div class="error-message" id="course-error"></div>
+        </div>
+
+        <!-- Department -->
+        <div class="form-group">
+          <label for="department">
+            <i class="fa-solid fa-building"></i> Department <sup style="color:#e00">*</sup>
+          </label>
+          <select id="department" name="department" required aria-required="true">
+            <option value="" disabled selected>Select your department</option>
+            <option value="Computer Science">Computer Science</option>
+            <option value="Information Technology">Information Technology</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Mechanical">Mechanical</option>
+            <option value="Civil">Civil</option>
+          </select>
+          
+          <div class="error-message" id="department-error"></div>
+        </div>
+
+        <!-- Passing Year -->
+        <div class="form-group">
+          <label for="passing_year">
+            <i class="fa-solid fa-calendar"></i> Passing Year <sup style="color:#e00">*</sup>
+          </label>
+          <input
+            type="number"
+            id="passing_year"
+            name="passing_year"
+            min="1950"
+            max="2099"
+            placeholder="e.g. 2024"
+            required
+            aria-required="true"
+          />
+          
+          <div class="error-message" id="passing_year-error"></div>
+        </div>
+
+        <button type="submit" id="submitBtn" aria-label="Register Now">
+          <span id="buttonText">Register Now</span>
+        </button>
+
+        <div class="login-link" aria-live="polite">
+          Already have an account? <a href="{% url 'login' %}" class="button">Login</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('registrationForm');
+      const submitBtn = document.getElementById('submitBtn');
+      const buttonText = document.getElementById('buttonText');
+      
+      // Password visibility toggle
+      const togglePassword = document.getElementById('togglePassword');
+      const passwordInput = document.getElementById('password');
+      
+      const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+      const confirmPasswordInput = document.getElementById('confirm_password');
+      
+      togglePassword.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+      });
+      
+      toggleConfirmPassword.addEventListener('click', function() {
+        const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        confirmPasswordInput.setAttribute('type', type);
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+      });
+      
+      // Radio button styling
+      const radioOptions = document.querySelectorAll('.radio-option');
+      radioOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          const radioInput = this.querySelector('input[type="radio"]');
+          radioInput.checked = true;
+          
+          // Update styling
+          radioOptions.forEach(opt => opt.classList.remove('selected'));
+          this.classList.add('selected');
+        });
+      });
+      
+      // Form validation
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Reset previous errors
+        clearErrors();
+        
+        // Validate form
+        let isValid = true;
+        
+        // Full Name validation
+        const fullName = document.getElementById('full_name').value.trim();
+        if (!fullName) {
+          showError('full_name', 'Full name is required');
+          isValid = false;
+        }
+        
+        // Email validation
+        const email = document.getElementById('email').value.trim();
+        if (!email) {
+          showError('email', 'Email is required');
+          isValid = false;
+        } else if (!isValidEmail(email)) {
+          showError('email', 'Please enter a valid email address');
+          isValid = false;
+        }
+        
+        // Password validation
+        const password = document.getElementById('password').value;
+        if (!password) {
+          showError('password', 'Password is required');
+          isValid = false;
+        } else if (password.length < 8) {
+          showError('password', 'Password must be at least 8 characters long');
+          isValid = false;
+        }
+        
+        // Confirm Password validation
+        const confirmPassword = document.getElementById('confirm_password').value;
+        if (!confirmPassword) {
+          showError('confirm_password', 'Please confirm your password');
+          isValid = false;
+        } else if (password !== confirmPassword) {
+          showError('confirm_password', 'Passwords do not match');
+          isValid = false;
+        }
+        
+        // Gender validation
+        const gender = document.querySelector('input[name="gender"]:checked');
+        if (!gender) {
+          showError('gender', 'Please select your gender');
+          isValid = false;
+        }
+        
+        // Course validation
+        const course = document.getElementById('course').value;
+        if (!course) {
+          showError('course', 'Please select your course');
+          isValid = false;
+        }
+        
+        // Department validation
+        const department = document.getElementById('department').value;
+        if (!department) {
+          showError('department', 'Please select your department');
+          isValid = false;
+        }
+        
+        // Passing Year validation
+        const passingYear = document.getElementById('passing_year').value;
+        if (!passingYear) {
+          showError('passing_year', 'Passing year is required');
+          isValid = false;
+        } else if (passingYear < 1950 || passingYear > 2099) {
+          showError('passing_year', 'Please enter a valid passing year');
+          isValid = false;
+        }
+        
+        // If form is valid, submit it
+        if (isValid) {
+          // Show loading state
+          submitBtn.classList.add('loading');
+          buttonText.textContent = 'Registering...';
+          
+          // Simulate form submission (replace with actual form submission)
+          setTimeout(() => {
+            alert('Registration successful!');
+            form.reset();
+            submitBtn.classList.remove('loading');
+            buttonText.textContent = 'Register Now';
+          }, 2000);
+        }
+      });
+      
+      // Helper functions
+      function showError(fieldName, message) {
+        const errorElement = document.getElementById(`${fieldName}-error`);
+        const formGroup = errorElement.closest('.form-group');
+        
+        errorElement.textContent = message;
+        formGroup.classList.add('error');
+      }
+      
+      function clearErrors() {
+        const errorElements = document.querySelectorAll('.error-message');
+        errorElements.forEach(element => {
+          element.textContent = '';
+          element.closest('.form-group').classList.remove('error');
+        });
+      }
+      
+      function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      }
+    });
+  </script>
+</body>
+</html>
