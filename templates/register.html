@@ -2,145 +2,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registration - Alumni Connect</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f4f4f4;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
-
-    .container {
-      background-color: white;
-      width: 700px;
-      border-radius: 10px;
-      padding: 30px 40px;
-      box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 15px;
-      color: #333;
-    }
-
-    .messages {
-      margin-bottom: 20px;
-    }
-
-    .messages li {
-      list-style: none;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
-
-    .role-toggle {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .role-toggle button {
-      background: #eaeaea;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      font-weight: 600;
-      border-radius: 6px;
-      margin: 0 5px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .role-toggle button.selected {
-      background: #4ca1af;
-      color: white;
-      box-shadow: 0 3px 8px rgba(76,161,175,0.3);
-    }
-
-    .form-group {
-      position: relative;
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      font-weight: 600;
-      display: block;
-      margin-bottom: 8px;
-      color: #444;
-    }
-
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      padding: 12px 15px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      font-size: 15px;
-      transition: all 0.2s;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus {
-      border-color: #4ca1af;
-      box-shadow: 0 0 3px rgba(76,161,175,0.4);
-      outline: none;
-    }
-
-    .password-toggle {
-      position: absolute;
-      right: 15px;
-      top: 38px;
-      cursor: pointer;
-      color: #888;
-    }
-
-    .password-toggle:hover {
-      color: #4ca1af;
-    }
-
-    button[type="submit"] {
-      width: 100%;
-      padding: 14px;
-      background: #4ca1af;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 17px;
-      cursor: pointer;
-      transition: 0.3s;
-      margin-top: 10px;
-    }
-
-    button[type="submit"]:hover {
-      background: #2c3e50;
-    }
-
-    .login-link {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 14px;
-    }
-
-    .login-link a {
-      color: #4ca1af;
-      font-weight: bold;
-      text-decoration: none;
-    }
-
-    .login-link a:hover {
-      text-decoration: underline;
-    }
+    body {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f4f4f4; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; padding:20px;}
+    .container {background:white; width:700px; border-radius:10px; padding:30px 40px; box-shadow:0px 5px 20px rgba(0,0,0,0.1); max-height:90vh; overflow-y:auto;}
+    h2 {text-align:center; margin-bottom:15px; color:#333;}
+    .messages {margin-bottom:20px;}
+    .messages li {list-style:none; margin-bottom:10px; font-weight:bold;}
+    .role-toggle {text-align:center; margin-bottom:20px;}
+    .role-toggle button {background:#eaeaea; border:none; padding:10px 20px; font-size:16px; font-weight:600; border-radius:6px; margin:0 5px; cursor:pointer; transition:0.3s;}
+    .role-toggle button.selected {background:#4ca1af; color:white; box-shadow:0 3px 8px rgba(76,161,175,0.3);}
+    .form-group {position:relative; margin-bottom:15px;}
+    .form-group label {font-weight:600; display:block; margin-bottom:8px; color:#444;}
+    .form-group input, .form-group select {width:100%; padding:12px 15px; border:1px solid #ddd; border-radius:5px; font-size:15px; transition:all 0.2s;}
+    .form-group input:focus, .form-group select:focus {border-color:#4ca1af; box-shadow:0 0 3px rgba(76,161,175,0.4); outline:none;}
+    .password-toggle {position:absolute; right:15px; top:38px; cursor:pointer; color:#888;}
+    .password-toggle:hover {color:#4ca1af;}
+    button[type="submit"] {width:100%; padding:14px; background:#4ca1af; color:white; border:none; border-radius:6px; font-size:17px; cursor:pointer; transition:0.3s; margin-top:10px;}
+    button[type="submit"]:hover {background:#2c3e50;}
+    .login-link {text-align:center; margin-top:20px; font-size:14px;}
+    .login-link a {color:#4ca1af; font-weight:bold; text-decoration:none;}
+    .login-link a:hover {text-decoration:underline;}
   </style>
 </head>
 <body>

@@ -3,6 +3,8 @@
 from django.urls import path
 from . import views
 
+app_name = 'pages'  # Optional, good for namespacing
+
 urlpatterns = [
     # 🏠 Home
     path('', views.home_view, name='home'),

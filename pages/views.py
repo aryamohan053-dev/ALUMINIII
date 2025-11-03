@@ -2,15 +2,15 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from .models import StudentProfile, StaffProfile
-
+from django.contrib.auth.decorators import login_required
+from .models import StudentProfile, StaffProfile, Memory
 
 # ---------------- Home ----------------
 def home_view(request):
     return render(request, 'home.html')
 
 
-# ---------------- Register (Student / Faculty) ----------------
+# ---------------- Register ----------------
 def register_view(request):
     if request.method == 'POST':
         role = request.POST.get('role')
@@ -27,7 +27,6 @@ def register_view(request):
             phone = request.POST.get('student_phone')
             photo = request.FILES.get('student_photo')
 
-            # Validation checks
             if password != confirm_password:
                 messages.error(request, "❌ Passwords do not match!")
                 return redirect('register')
@@ -36,9 +35,8 @@ def register_view(request):
                 messages.error(request, "❌ Email already registered!")
                 return redirect('register')
 
-            # Create Django user and student profile
             user = User.objects.create_user(
-                username=email,  # username same as email
+                username=email,
                 email=email,
                 password=password,
                 first_name=name
@@ -48,15 +46,15 @@ def register_view(request):
                 user=user,
                 roll_number=roll,
                 department=dept,
-                passing_year=year,
+                year_of_passing=year,
                 phone=phone,
-                profile_photo=photo
+                photo=photo
             )
 
             messages.success(request, "✅ Student registered successfully!")
             return redirect('login')
 
-        # ---------- Faculty Registration ----------
+        # ---------- Teacher Registration ----------
         elif role == 'teacher':
             faculty_id = request.POST.get('faculty_id')
             email = request.POST.get('teacher_email')
@@ -71,7 +69,6 @@ def register_view(request):
             phone = request.POST.get('teacher_phone')
             photo = request.FILES.get('teacher_photo')
 
-            # Validation checks
             if password != confirm_password:
                 messages.error(request, "❌ Passwords do not match!")
                 return redirect('register')
@@ -80,7 +77,6 @@ def register_view(request):
                 messages.error(request, "❌ Email already registered!")
                 return redirect('register')
 
-            # Create Django user and staff profile
             user = User.objects.create_user(
                 username=email,
                 email=email,
@@ -97,20 +93,17 @@ def register_view(request):
                 date_joined=date_joined,
                 status=status,
                 phone=phone,
-                profile_photo=photo
+                photo=photo
             )
 
             messages.success(request, "✅ Faculty registered successfully!")
             return redirect('login')
 
-        # ---------- Invalid Role ----------
         else:
             messages.error(request, "❌ Please select a valid role!")
             return redirect('register')
 
-    # ---------- GET Request (Render Page) ----------
     return render(request, 'register.html')
-
 
 
 # ---------------- Login ----------------
@@ -120,7 +113,7 @@ def login_view(request):
         password = request.POST.get('password')
 
         user = authenticate(request, username=email, password=password)
-        if user is not None:
+        if user:
             login(request, user)
             messages.success(request, "✅ Login successful!")
             return redirect('dashboard')
@@ -139,16 +132,34 @@ def logout_view(request):
 
 
 # ---------------- Dashboard ----------------
+@login_required
 def dashboard_view(request):
     return render(request, 'dashboard.html')
 
 
 # ---------------- Profile ----------------
+@login_required
 def profile_view(request):
-    # Later: detect whether user is a student or staff and display accordingly
-    return render(request, 'profile.html')
+    user = request.user
+    profile = None
+    role = None
+
+    try:
+        profile = user.studentprofile
+        role = 'student'
+    except StudentProfile.DoesNotExist:
+        try:
+            profile = user.staffprofile
+            role = 'staff'
+        except StaffProfile.DoesNotExist:
+            role = 'unknown'
+
+    context = {'profile': profile, 'role': role}
+    return render(request, 'profile.html', context)
 
 
 # ---------------- Memory Gallery ----------------
+@login_required
 def memory_gallery_view(request):
-    return render(request, 'memory_gallery.html')
+    memories = Memory.objects.all().order_by('-date_posted')
+    return render(request, 'memory_gallery.html', {'memories': memories})
