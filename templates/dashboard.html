@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alumni Connect Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+  {% load static %}
+  {% load humanize %}   <!-- added -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Alumni Connect Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
@@ -37,6 +39,7 @@
             box-shadow: 3px 0 15px rgba(0, 0, 0, 0.1);
             z-index: 1000;
             transition: all 0.3s ease;
+            overflow-y: auto;
         }
         
         .sidebar .nav-link {
@@ -234,26 +237,18 @@
             padding: 8px 20px;
             font-weight: 500;
             transition: all 0.3s;
+            color: white;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            color: white;
         }
         
         .btn-outline-primary {
             border-radius: 8px;
             font-weight: 500;
-        }
-        
-        /* Profile Header */
-        .profile-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 30px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: var(--card-shadow);
         }
         
         /* Service Cards */
@@ -310,28 +305,6 @@
             box-shadow: var(--hover-shadow);
         }
         
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-            }
-            
-            .main-content {
-                margin-left: 0;
-            }
-            
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .header > div {
-                margin-top: 10px;
-            }
-        }
-        
         /* Animation for page load */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -359,371 +332,190 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #2980b9;
         }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 10px;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .header > div {
+                margin-top: 10px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 sidebar d-md-block">
-                <div class="sidebar-brand">
-                    <h3 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Alumni Connect</h3>
-                    <small class="text-muted">Stay Connected, Grow Together</small>
-                </div>
-                
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">
-                            <i class="fas fa-tachometer-alt"></i> Dashboard
-                        </a>
-                    </li>
-                   <li class="nav-item">
-    <a class="nav-link" href="{% url 'profile' %}">
-        <i class="fas fa-user-circle"></i>  Profile
-    </a>
-</li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'memory_gallery' %}">
-                            <i class="fas fa-user-circle"></i>  Memory Gallery
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-images"></i> Network
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-users"></i> Events
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-calendar-alt"></i> Services
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-handshake"></i> Donations
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-donate"></i> Settings
-                        </a>
-                    </li>
-                    <li class="nav-item mt-4 pt-3 border-top">
-    <a class="nav-link" href="{% url 'logout' %}">
-    <i class="fas fa-sign-out-alt"></i> Logout
-</a>
-
-</li>
-
-                </ul>
-            </div>
-            
-            <!-- Main Content -->
-            <div class="col-md-9 col-lg-10 main-content">
-                <!-- Header -->
-                <div class="header fade-in">
-                    <h2 class="mb-0">Welcome back, John!</h2>
-                    <div class="d-flex align-items-center">
-                        <div class="position-relative me-3">
-                            <i class="fas fa-bell fa-lg text-muted"></i>
-                            <span class="notification-badge">3</span>
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown">
-                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80" class="user-avatar me-2" alt="User">
-                                John Doe
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item">
-    <a class="nav-link" href="{% url 'profile' %}">
-        <i class="fas fa-user-circle"></i>  Profile
-    </a>
-</li>
-
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="nav-link" href="{% url 'logout' %}">
-    <i class="fas fa-sign-out-alt"></i> Logout
-</a>
-</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Stats Cards -->
-                <div class="row fade-in">
-                    <div class="col-md-3">
-                        <div class="stats-card card-1">
-                            <i class="fas fa-users text-primary"></i>
-                            <h4>1,254</h4>
-                            <p class="text-muted">Alumni Connected</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stats-card card-2">
-                            <i class="fas fa-images text-success"></i>
-                            <h4>568</h4>
-                            <p class="text-muted">Memories Shared</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stats-card card-3">
-                            <i class="fas fa-calendar-alt text-danger"></i>
-                            <h4>24</h4>
-                            <p class="text-muted">Upcoming Events</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stats-card card-4">
-                            <i class="fas fa-donate text-warning"></i>
-                            <h4>$12,540</h4>
-                            <p class="text-muted">Funds Collected</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <!-- Recent Memories -->
-                    <div class="col-lg-6">
-                        <div class="dashboard-section fade-in">
-                            <h4 class="section-title">
-                                <i class="fas fa-images me-2"></i>Recent Memories
-                            </h4>
-                            
-                            <div class="memory-item">
-                                <div class="d-flex">
-                                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80" class="user-avatar me-3" alt="User">
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex justify-content-between">
-                                            <h6>Sarah Johnson</h6>
-                                            <small class="text-muted">2 hours ago</small>
-                                        </div>
-                                        <p class="text-muted mb-1">Graduation Day 2020</p>
-                                        <p class="mb-2">Such an amazing day! Can't believe it's been 3 years already. So many memories with this amazing batch!</p>
-                                        <div class="d-flex mb-2">
-                                            <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" class="me-2 rounded" style="width: 80px; height: 80px; object-fit: cover;" alt="Memory">
-                                            <img src="https://images.unsplash.com/photo-1541336032412-2048a678540d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" class="me-2 rounded" style="width: 80px; height: 80px; object-fit: cover;" alt="Memory">
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <button class="btn btn-sm btn-outline-primary me-2"><i class="fas fa-heart me-1"></i> 24</button>
-                                                <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-comment me-1"></i> 8</button>
-                                            </div>
-                                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-share-alt me-1"></i> Share</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="memory-item">
-                                <div class="d-flex">
-                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80" class="user-avatar me-3" alt="User">
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex justify-content-between">
-                                            <h6>Michael Chen</h6>
-                                            <small class="text-muted">1 day ago</small>
-                                        </div>
-                                        <p class="text-muted mb-1">Annual Fest 2019</p>
-                                        <p class="mb-2">Our band performance was the highlight of the event! Still remember the roaring applause.</p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <button class="btn btn-sm btn-outline-primary me-2"><i class="fas fa-heart me-1"></i> 42</button>
-                                                <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-comment me-1"></i> 15</button>
-                                            </div>
-                                            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-share-alt me-1"></i> Share</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="text-center mt-3">
-                                <a href="#" class="btn btn-primary px-4">
-                                    <i class="fas fa-images me-2"></i>View All Memories
-                                </a>
-                            </div>
-                        </div>
-                        
-                        <!-- Services Section -->
-                        <div class="dashboard-section fade-in">
-                            <h4 class="section-title">
-                                <i class="fas fa-handshake me-2"></i>Alumni Services
-                            </h4>
-                            
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <div class="card service-card h-100">
-                                        <div class="card-body">
-                                            <i class="fas fa-briefcase fa-2x text-primary mb-3"></i>
-                                            <h5>Career Guidance</h5>
-                                            <p class="text-muted">Get career advice from experienced alumni</p>
-                                            <button class="btn btn-outline-primary btn-sm">Request Guidance</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="card service-card h-100">
-                                        <div class="card-body">
-                                            <i class="fas fa-user-graduate fa-2x text-success mb-3"></i>
-                                            <h5>Mentorship</h5>
-                                            <p class="text-muted">Find mentors in your field of interest</p>
-                                            <button class="btn btn-outline-primary btn-sm">Find Mentor</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="card service-card h-100">
-                                        <div class="card-body">
-                                            <i class="fas fa-code-branch fa-2x text-warning mb-3"></i>
-                                            <h5>Internships</h5>
-                                            <p class="text-muted">Explore internship opportunities</p>
-                                            <button class="btn btn-outline-primary btn-sm">Browse</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="card service-card h-100">
-                                        <div class="card-body">
-                                            <i class="fas fa-network-wired fa-2x text-info mb-3"></i>
-                                            <h5>Networking</h5>
-                                            <p class="text-muted">Connect with alumni worldwide</p>
-                                            <button class="btn btn-outline-primary btn-sm">Connect</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Upcoming Events & Donations -->
-                    <div class="col-lg-6">
-                        <div class="dashboard-section fade-in">
-                            <h4 class="section-title">
-                                <i class="fas fa-calendar-alt me-2"></i>Upcoming Events
-                            </h4>
-                            
-                            <div class="event-item">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h6>Annual Alumni Meet 2023</h6>
-                                    <span class="badge bg-primary">120 Attending</span>
-                                </div>
-                                <p class="text-muted mb-1"><i class="fas fa-calendar me-2"></i>October 15, 2023 | 6:00 PM</p>
-                                <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>College Campus</p>
-                                <p class="small text-muted">Join us for our annual alumni gathering with food, drinks, and networking opportunities.</p>
-                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                    <span class="text-success"><i class="fas fa-check-circle me-1"></i>You're attending</span>
-                                    <button class="btn btn-primary btn-sm">View Details</button>
-                                </div>
-                            </div>
-                            
-                            <div class="event-item">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h6>Career Fair 2023</h6>
-                                    <span class="badge bg-primary">85 Attending</span>
-                                </div>
-                                <p class="text-muted mb-1"><i class="fas fa-calendar me-2"></i>November 5, 2023 | 10:00 AM</p>
-                                <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>Auditorium</p>
-                                <p class="small text-muted">Connect with top employers and explore career opportunities across various industries.</p>
-                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                    <span class="text-warning"><i class="fas fa-clock me-1"></i>Pending response</span>
-                                    <button class="btn btn-primary btn-sm">RSVP</button>
-                                </div>
-                            </div>
-                            
-                            <div class="event-item">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h6>Mentorship Program Launch</h6>
-                                    <span class="badge bg-primary">65 Attending</span>
-                                </div>
-                                <p class="text-muted mb-1"><i class="fas fa-calendar me-2"></i>September 20, 2023 | 3:00 PM</p>
-                                <p class="mb-2"><i class="fas fa-video me-2"></i>Virtual Event</p>
-                                <p class="small text-muted">Learn about our new mentorship program and how you can participate as a mentor or mentee.</p>
-                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                    <span class="text-muted">Not responded</span>
-                                    <button class="btn btn-primary btn-sm">RSVP</button>
-                                </div>
-                            </div>
-                            
-                            <div class="text-center mt-3">
-                                <a href="#" class="btn btn-primary px-4">
-                                    <i class="fas fa-calendar me-2"></i>View All Events
-                                </a>
-                            </div>
-                        </div>
-                        
-                        <!-- Donations Section -->
-                        <div class="dashboard-section fade-in">
-                            <h4 class="section-title">
-                                <i class="fas fa-donate me-2"></i>Support Our Community
-                            </h4>
-                            
-                            <div class="row mb-4">
-                                <div class="col-md-4 mb-3">
-                                    <div class="donation-card">
-                                        <h5 class="text-primary">Scholarship Fund</h5>
-                                        <p class="text-muted small">Support deserving students with financial aid</p>
-                                        <button class="btn btn-primary btn-sm mt-2">Donate</button>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <div class="donation-card">
-                                        <h5 class="text-success">Campus Development</h5>
-                                        <p class="text-muted small">Improve college facilities and infrastructure</p>
-                                        <button class="btn btn-primary btn-sm mt-2">Donate</button>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <div class="donation-card">
-                                        <h5 class="text-warning">Event Sponsorship</h5>
-                                        <p class="text-muted small">Support alumni events and activities</p>
-                                        <button class="btn btn-primary btn-sm mt-2">Donate</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <h6 class="mb-3">Annual Scholarship Fund Progress</h6>
-                            <div class="progress mb-2">
-                                <div class="progress-bar" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <div class="d-flex justify-content-between mb-1">
-                                <span class="text-muted">Raised: $9,405</span>
-                                <span class="text-muted">Goal: $12,540</span>
-                            </div>
-                            <p class="text-center text-muted small mt-3">Your contribution helps deserving students achieve their academic dreams</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-md-3 col-lg-2 sidebar">
+        <div class="sidebar-brand">
+          <h3 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Alumni Connect</h3>
+          <small class="text-white-50">Stay Connected, Grow Together</small>
         </div>
-    </div>
+        <ul class="nav flex-column">
+          <li class="nav-item"><a class="nav-link active" href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user-circle"></i> Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'memory_gallery' %}"><i class="fas fa-images"></i> Memory Gallery</a></li>
+          <li class="nav-item mt-4 pt-3 border-top"><a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+      </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Add some interactive elements
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add animation delay to elements
-            const fadeElements = document.querySelectorAll('.fade-in');
-            fadeElements.forEach((el, index) => {
-                el.style.animationDelay = `${index * 0.1}s`;
-            });
-            
-            // Add hover effect to stats cards
-            const statsCards = document.querySelectorAll('.stats-card');
-            statsCards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-7px)';
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                });
-            });
-        });
-    </script>
+      <!-- Main Content -->
+      <div class="col-md-9 col-lg-10 main-content">
+        <div class="header fade-in d-flex justify-content-between align-items-center">
+          <div>
+            <h2 class="mb-0">Welcome back, {{ user.first_name|default:user.username }}!</h2>
+            {% if student_profile %}
+              <small class="text-muted">{{ student_profile.department }} {% if student_profile.roll_number %}• Roll: {{ student_profile.roll_number }}{% endif %}</small>
+            {% endif %}
+          </div>
+
+          <div class="d-flex align-items-center">
+            <div class="me-3 position-relative">
+              <i class="fas fa-bell fa-lg text-muted"></i>
+              <span class="notification-badge">3</span>
+            </div>
+
+            <div class="dropdown">
+              <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                {% if student_profile and student_profile.profile_photo %}
+                  <img src="{{ student_profile.profile_photo.url }}" alt="avatar" class="user-avatar me-2">
+                {% else %}
+                  <i class="fas fa-user-circle me-2"></i>
+                {% endif %}
+                {{ user.first_name|default:user.username }}
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user me-2"></i>Profile</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {% block title %}Dashboard — {{ user.first_name|default:user.username }}{% endblock %}
+
+        {% block stats %}
+          <div class="row">
+            <div class="col-md-3"><div class="stats-card text-center"><i class="fas fa-users fa-2x text-primary mb-2"></i><h4>{{ alumni_count }}</h4><p class="text-muted">Alumni Connected</p></div></div>
+            <div class="col-md-3"><div class="stats-card text-center"><i class="fas fa-images fa-2x text-success mb-2"></i><h4>{{ memories_count }}</h4><p class="text-muted">Your Memories</p></div></div>
+            <div class="col-md-3"><div class="stats-card text-center"><i class="fas fa-calendar-alt fa-2x text-danger mb-2"></i><h4>{{ upcoming_events|length }}</h4><p class="text-muted">Upcoming Events</p></div></div>
+            <div class="col-md-3"><div class="stats-card text-center"><i class="fas fa-donate fa-2x text-warning mb-2"></i><h4>${{ funds_total }}</h4><p class="text-muted">Funds Collected</p></div></div>
+          </div>
+        {% endblock %}
+
+        <div class="row">
+          <!-- Recent Memories -->
+          <div class="col-lg-6">
+            <div class="dashboard-section fade-in">
+              <h4 class="section-title"><i class="fas fa-images me-2"></i>Recent Memories</h4>
+
+              {% if recent_memories %}
+                {% for m in recent_memories %}
+                  <div class="memory-item d-flex mb-2">
+                    {% if m.image %}<img src="{{ m.image.url }}" class="user-avatar me-3" alt="mem">{% endif %}
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between">
+                        <strong>{{ m.user.get_full_name|default:m.user.username }}</strong>
+                        <small class="text-muted">{{ m.created_at|naturaltime }}</small>
+                      </div>
+                      <p class="mb-1 text-muted">{{ m.title }}</p>
+                      <p class="small">{{ m.description|truncatewords:20 }}</p>
+                      <div class="d-flex justify-content-between">
+                        <div>
+                          <button class="btn btn-sm btn-outline-primary"><i class="fas fa-heart"></i> {{ m.likes }}</button>
+                        </div>
+                        <a href="{% url 'memory_detail' m.id %}" class="btn btn-sm btn-outline-primary">View</a>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <p class="text-muted">No memories shared yet.</p>
+              {% endif %}
+
+              <div class="text-center mt-3">
+                <a href="{% url 'memory_gallery' %}" class="btn btn-primary px-4"><i class="fas fa-images me-2"></i>View All Memories</a>
+              </div>
+            </div>
+
+            <!-- Services -->
+            <div class="dashboard-section fade-in mt-3">
+              <h4 class="section-title"><i class="fas fa-handshake me-2"></i>Alumni Services</h4>
+              <div class="row">
+                <div class="col-md-6"><div class="service-card text-center p-3"><i class="fas fa-briefcase fa-2x mb-2 text-primary"></i><h6>Career Guidance</h6></div></div>
+                <div class="col-md-6"><div class="service-card text-center p-3"><i class="fas fa-user-graduate fa-2x mb-2 text-success"></i><h6>Mentorship</h6></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Events & Donations -->
+          <div class="col-lg-6">
+            <div class="dashboard-section fade-in">
+              <h4 class="section-title"><i class="fas fa-calendar-alt me-2"></i>Upcoming Events</h4>
+
+              {% if upcoming_events %}
+                {% for ev in upcoming_events %}
+                  <div class="event-item mb-2">
+                    <div class="d-flex justify-content-between">
+                      <strong>{{ ev.title }}</strong>
+                      <span class="badge bg-primary">{{ ev.attendees_count|default:0 }}</span>
+                    </div>
+                    <small class="text-muted">{{ ev.start_date|date:"M d, Y" }} • {{ ev.location|default:"Online" }}</small>
+                    <p class="small mt-1 text-muted">{{ ev.description|truncatewords:20 }}</p>
+                    <div class="d-flex justify-content-between mt-2">
+                      {% if ev.is_user_attending %}<span class="text-success">You're attending</span>{% else %}<button class="btn btn-sm btn-primary">RSVP</button>{% endif %}
+                      <a href="{% url 'event_detail' ev.id %}" class="btn btn-sm btn-outline-primary">Details</a>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <p class="text-muted">No upcoming events.</p>
+              {% endif %}
+            </div>
+
+            <div class="dashboard-section fade-in mt-3">
+              <h4 class="section-title"><i class="fas fa-donate me-2"></i>Support Our Community</h4>
+              <div class="row mb-3">
+                {% for d in donations %}
+                  <div class="col-md-4 mb-2"><div class="donation-card p-2"><strong>{{ d.title }}</strong><p class="small text-muted">{{ d.summary|default:"Support a cause" }}</p></div></div>
+                {% empty %}
+                  <div class="col-12"><p class="text-muted">No donation campaigns right now.</p></div>
+                {% endfor %}
+              </div>
+
+              <h6 class="mb-2">Scholarship Fund Progress</h6>
+              <div class="progress mb-2"><div class="progress-bar" role="progressbar" style="width:{{ funds_percent }}%"></div></div>
+              <div class="d-flex justify-content-between"><small>Raised: ${{ funds_total }}</small><small>Goal: ${{ goal|intcomma }}</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const fadeElements = document.querySelectorAll('.fade-in');
+      fadeElements.forEach((el, index) => el.style.animationDelay = `${index * 0.08}s`);
+    });
+  </script>
 </body>
 </html>

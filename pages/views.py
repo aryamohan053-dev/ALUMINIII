@@ -1,9 +1,23 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import logout as auth_logout, authenticate, login
 from django.contrib import messages
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import StudentProfile, StaffProfile, Memory
+from django.contrib.auth.models import User
+from django.db.models import Sum
+
+# Import only models guaranteed to exist at module import time.
+try:
+    from .models import StudentProfile, Memory, StaffProfile
+except Exception:
+    StudentProfile = None
+    Memory = None
+    StaffProfile = None
+
+try:
+    from .models import Event, Donation
+except Exception:
+    Event = None
+    Donation = None
 
 # ---------------- Home ----------------
 def home_view(request):
@@ -13,95 +27,103 @@ def home_view(request):
 # ---------------- Register ----------------
 def register_view(request):
     if request.method == 'POST':
-        role = request.POST.get('role')
+        role = request.POST.get('role', 'student')
 
-        # ---------- Student Registration ----------
+        # Student form field names from template
         if role == 'student':
-            name = request.POST.get('student_name')
-            email = request.POST.get('student_email')
-            password = request.POST.get('password')
-            confirm_password = request.POST.get('confirm_password')
-            roll = request.POST.get('student_roll')
-            dept = request.POST.get('student_dept')
-            year = request.POST.get('student_year')
-            phone = request.POST.get('student_phone')
+            full_name = request.POST.get('student_name', '').strip()
+            email = request.POST.get('student_email', '').strip().lower()
+            password = request.POST.get('password', '').strip()
+            confirm = request.POST.get('confirm_password', '').strip()
+            roll = request.POST.get('student_roll', '').strip()
+            department = request.POST.get('student_dept', '').strip()
+            year = request.POST.get('student_year', '').strip()
+            phone = request.POST.get('student_phone', '').strip()
             photo = request.FILES.get('student_photo')
 
-            if password != confirm_password:
-                messages.error(request, "❌ Passwords do not match!")
-                return redirect('register')
-
-            if User.objects.filter(email=email).exists():
-                messages.error(request, "❌ Email already registered!")
-                return redirect('register')
-
-            user = User.objects.create_user(
-                username=email,
-                email=email,
-                password=password,
-                first_name=name
-            )
-
-            StudentProfile.objects.create(
-                user=user,
-                roll_number=roll,
-                department=dept,
-                year_of_passing=year,
-                phone=phone,
-                photo=photo
-            )
-
-            messages.success(request, "✅ Student registered successfully!")
-            return redirect('login')
-
-        # ---------- Teacher Registration ----------
-        elif role == 'teacher':
-            faculty_id = request.POST.get('faculty_id')
-            email = request.POST.get('teacher_email')
-            password = request.POST.get('teacher_password')
-            confirm_password = request.POST.get('teacher_confirm_password')
-            designation = request.POST.get('designation')
-            dept = request.POST.get('department')
-            qualification = request.POST.get('qualification')
-            experience = request.POST.get('experience')
-            date_joined = request.POST.get('date_joined')
-            status = request.POST.get('status')
-            phone = request.POST.get('teacher_phone')
-            photo = request.FILES.get('teacher_photo')
-
-            if password != confirm_password:
-                messages.error(request, "❌ Passwords do not match!")
-                return redirect('register')
-
-            if User.objects.filter(email=email).exists():
-                messages.error(request, "❌ Email already registered!")
-                return redirect('register')
-
-            user = User.objects.create_user(
-                username=email,
-                email=email,
-                password=password,
-                first_name=faculty_id
-            )
-
-            StaffProfile.objects.create(
-                user=user,
-                designation=designation,
-                department=dept,
-                qualification=qualification,
-                experience=experience,
-                date_joined=date_joined,
-                status=status,
-                phone=phone,
-                photo=photo
-            )
-
-            messages.success(request, "✅ Faculty registered successfully!")
-            return redirect('login')
-
+        # Teacher form field names
         else:
-            messages.error(request, "❌ Please select a valid role!")
+            full_name = request.POST.get('faculty_id', '').strip()
+            email = request.POST.get('teacher_email', '').strip().lower()
+            password = request.POST.get('teacher_password', '').strip()
+            confirm = request.POST.get('teacher_confirm_password', '').strip()
+            department = request.POST.get('department', '').strip()
+            phone = request.POST.get('teacher_phone', '').strip()
+            photo = request.FILES.get('teacher_photo')
+            # teacher-specific extras (qualification, designation) can be read here
+
+        # basic validation
+        if not password:
+            messages.error(request, 'Password is required.')
             return redirect('register')
+
+        if password != confirm:
+            messages.error(request, 'Passwords do not match.')
+            return redirect('register')
+
+        if not email and not full_name:
+            messages.error(request, 'Provide an email or a name.')
+            return redirect('register')
+
+        if email and User.objects.filter(email=email).exists():
+            messages.error(request, 'Email already registered.')
+            return redirect('register')
+
+        # derive unique username
+        base = email.split('@')[0] if email and '@' in email else ''.join(full_name.split()).lower() or 'user'
+        username = base
+        i = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{base}{i}"
+            i += 1
+
+        # split name
+        first_name = last_name = ''
+        if full_name:
+            parts = full_name.split()
+            first_name = parts[0]
+            last_name = ' '.join(parts[1:]) if len(parts) > 1 else ''
+
+        try:
+            user = User.objects.create_user(
+                username=username,
+                email=email or '',
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
+        except Exception as e:
+            messages.error(request, f'Error creating user: {e}')
+            return redirect('register')
+
+        # create matching profile fields (use actual StudentProfile fields)
+        try:
+            if role == 'student' and StudentProfile:
+                StudentProfile.objects.create(
+                    user=user,
+                    roll_number=roll,
+                    year_of_passing=(int(year) if year.isdigit() else None),
+                    phone=phone,
+                    department=department or '',
+                    profile_photo=photo
+                )
+            elif role != 'student' and StaffProfile:
+                StaffProfile.objects.create(
+                    user=user,
+                    designation=request.POST.get('designation', ''),
+                    phone=phone,
+                    department=department or '',
+                )
+            else:
+                # fallback when specific profile model is not available
+                if StudentProfile:
+                    StudentProfile.objects.get_or_create(user=user)
+        except Exception:
+            if StudentProfile:
+                StudentProfile.objects.get_or_create(user=user)
+
+        messages.success(request, 'Registration successful. Please login.')
+        return redirect('login')
 
     return render(request, 'register.html')
 
@@ -124,42 +146,107 @@ def login_view(request):
     return render(request, 'login.html')
 
 
+# ---------------- Forgot Password ----------------
+def forgot_password_view(request):
+    return render(request, 'forgot_password.html')
+
+
 # ---------------- Logout ----------------
+@login_required(login_url='login')
 def logout_view(request):
-    logout(request)
-    messages.success(request, "✅ Logged out successfully!")
+    # log the user out and redirect to login (or another named URL)
+    auth_logout(request)
     return redirect('login')
 
 
 # ---------------- Dashboard ----------------
-@login_required
+@login_required(login_url='login')
 def dashboard_view(request):
-    return render(request, 'dashboard.html')
+    user = request.user
+
+    # import optional models inside the view to avoid ImportError at module import time
+    try:
+        from .models import StudentProfile, Memory
+    except Exception:
+        StudentProfile = None
+        Memory = None
+
+    try:
+        from .models import Event, Donation
+    except Exception:
+        Event = None
+        Donation = None
+
+    # student profile
+    student_profile = None
+    if StudentProfile:
+        try:
+            student_profile = StudentProfile.objects.filter(user=user).first()
+        except Exception:
+            student_profile = None
+
+    # stats
+    alumni_count = User.objects.count()
+    memories_count = Memory.objects.filter(user=user).count() if Memory else 0
+    recent_memories = Memory.objects.filter(user=user).order_by('-created_at')[:6] if Memory else []
+
+    # events and donations (safe queries)
+    upcoming_events = Event.objects.all().order_by('start_date')[:6] if Event else []
+    donations = Donation.objects.all().order_by('-created_at')[:6] if Donation else []
+
+    funds_total = 0
+    if Donation:
+        try:
+            funds_total = Donation.objects.aggregate(total=Sum('amount'))['total'] or 0
+        except Exception:
+            funds_total = 0
+
+    goal = 12540.0
+    funds_percent = 0
+    if goal:
+        try:
+            funds_percent = int(min(100, (float(funds_total) / goal) * 100))
+        except Exception:
+            funds_percent = 0
+
+    context = {
+        'user': user,
+        'student_profile': student_profile,
+        'alumni_count': alumni_count,
+        'memories_count': memories_count,
+        'recent_memories': recent_memories,
+        'upcoming_events': upcoming_events,
+        'donations': donations,
+        'funds_total': funds_total,
+        'funds_percent': funds_percent,
+        'goal': int(goal),
+    }
+    return render(request, 'dashboard.html', context)
 
 
 # ---------------- Profile ----------------
-@login_required
+@login_required(login_url='login')
 def profile_view(request):
     user = request.user
-    profile = None
-    role = None
-
+    
     try:
-        profile = user.studentprofile
-        role = 'student'
+        student_profile = StudentProfile.objects.get(user=user)
     except StudentProfile.DoesNotExist:
-        try:
-            profile = user.staffprofile
-            role = 'staff'
-        except StaffProfile.DoesNotExist:
-            role = 'unknown'
-
-    context = {'profile': profile, 'role': role}
-    return render(request, 'profile.html', context)
+        student_profile = None
+    
+    return render(request, 'profile.html', {
+        'user': user,
+        'student_profile': student_profile
+    })
 
 
 # ---------------- Memory Gallery ----------------
-@login_required
+@login_required(login_url='login')
 def memory_gallery_view(request):
-    memories = Memory.objects.all().order_by('-date_posted')
-    return render(request, 'memory_gallery.html', {'memories': memories})
+    user = request.user
+    memories = Memory.objects.filter(user=user).order_by('-created_at')
+    
+    return render(request, 'memory_gallery.html', {
+        'user': user,
+        'memories': memories
+    })

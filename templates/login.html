@@ -7,97 +7,238 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - Alumni Connect</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --primary-color: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary-color: #64748b;
+      --accent-color: #0ea5e9;
+      --light-color: #f8fafc;
+      --dark-color: #1e293b;
+      --success-color: #10b981;
+      --error-color: #ef4444;
+      --border-color: #e2e8f0;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #2c3e50, #4ca1af);
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.6;
     }
 
     .login-container {
       background-color: white;
-      border-radius: 15px;
-      box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
-      padding: 40px 50px;
-      width: 380px;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 440px;
       text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-header {
+      margin-bottom: 32px;
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      background: var(--primary-color);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      color: white;
+      font-size: 24px;
     }
 
     h2 {
-      color: #333;
-      margin-bottom: 25px;
+      color: var(--dark-color);
+      margin-bottom: 8px;
+      font-weight: 700;
+      font-size: 24px;
+    }
+
+    .subtitle {
+      color: var(--secondary-color);
+      font-size: 14px;
+      font-weight: 400;
     }
 
     .form-group {
       margin-bottom: 20px;
       position: relative;
+      text-align: left;
     }
 
     label {
       display: block;
-      text-align: left;
-      font-weight: bold;
-      margin-bottom: 5px;
-      color: #555;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--dark-color);
+      font-size: 14px;
+    }
+
+    .input-container {
+      position: relative;
     }
 
     input {
       width: 100%;
-      padding: 10px 35px 10px 10px;
-      border: 1px solid #ccc;
+      padding: 12px 16px 12px 40px;
+      border: 1px solid var(--border-color);
       border-radius: 8px;
       font-size: 14px;
+      transition: all 0.2s ease;
+      background-color: var(--light-color);
     }
 
-    .form-group i {
+    input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .input-icon {
       position: absolute;
-      right: 10px;
-      top: 35px;
-      color: #aaa;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--secondary-color);
+      font-size: 16px;
+    }
+
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      font-size: 14px;
     }
 
     .remember {
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      margin-bottom: 20px;
+    }
+
+    .remember input {
+      width: auto;
+      margin-right: 8px;
     }
 
     .remember label {
-      font-size: 13px;
-      margin-left: 5px;
-      color: #555;
+      margin-bottom: 0;
+      color: var(--secondary-color);
+    }
+
+    .forgot-password {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .forgot-password:hover {
+      text-decoration: underline;
     }
 
     .btn-login {
-      background: #4ca1af;
+      background: var(--primary-color);
       color: white;
       border: none;
       width: 100%;
-      padding: 10px;
+      padding: 14px;
       border-radius: 8px;
       font-size: 16px;
+      font-weight: 600;
       cursor: pointer;
       transition: background 0.3s;
+      margin-bottom: 24px;
     }
 
     .btn-login:hover {
-      background: #2c3e50;
+      background: var(--primary-dark);
     }
 
-    .register-link {
-      margin-top: 20px;
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 24px 0;
+      color: var(--secondary-color);
       font-size: 14px;
     }
 
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .divider span {
+      padding: 0 12px;
+    }
+
+    .social-login {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .social-btn {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .social-btn:hover {
+      background: var(--light-color);
+      border-color: var(--secondary-color);
+    }
+
+    .social-btn i {
+      font-size: 18px;
+    }
+
+    .social-btn.google i {
+      color: #db4437;
+    }
+
+    .social-btn.linkedin i {
+      color: #0077b5;
+    }
+
+    .register-link {
+      font-size: 14px;
+      color: var(--secondary-color);
+    }
+
     .register-link a {
-      color: #4ca1af;
-      font-weight: bold;
+      color: var(--primary-color);
+      font-weight: 600;
       text-decoration: none;
     }
 
@@ -105,52 +246,132 @@
       text-decoration: underline;
     }
 
-    p.message {
-      font-weight: bold;
-      margin-bottom: 10px;
+    .message {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: left;
+    }
+
+    .message.success {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success-color);
+      border-left: 4px solid var(--success-color);
+    }
+
+    .message.error {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--error-color);
+      border-left: 4px solid var(--error-color);
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 32px 24px;
+      }
+      
+      .form-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      
+      .social-login {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
 
   <div class="login-container">
-    <h2>Login to Alumni Connect</h2>
+    <div class="login-header">
+      <div class="logo">
+        <i class="fas fa-graduation-cap"></i>
+      </div>
+      <h2>Welcome Back</h2>
+      <p class="subtitle">Sign in to your Alumni Connect account</p>
+    </div>
 
     <form method="POST" action="{% url 'login' %}">
       {% csrf_token %}
 
       {% if messages %}
         {% for message in messages %}
-          <p class="message" style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">
+          <div class="message {% if message.tags == 'error' %}error{% else %}success{% endif %}">
             {{ message }}
-          </p>
+          </div>
         {% endfor %}
       {% endif %}
 
       <div class="form-group">
-        <label>Email Address</label>
-        <input type="email" name="email" required>
-        <i class="fas fa-envelope"></i>
+        <label for="email">Email Address</label>
+        <div class="input-container">
+          <input type="email" id="email" name="email" required placeholder="Enter your email">
+          <i class="fas fa-envelope input-icon"></i>
+        </div>
       </div>
 
       <div class="form-group">
-        <label>Password</label>
-        <input type="password" name="password" required>
-        <i class="fas fa-lock"></i>
+        <label for="password">Password</label>
+        <div class="input-container">
+          <input type="password" id="password" name="password" required placeholder="Enter your password">
+          <i class="fas fa-lock input-icon"></i>
+        </div>
       </div>
 
-      <div class="remember">
-        <input type="checkbox" name="remember" value="on">
-        <label>Remember me</label>
-      </div>
+      <div class="form-options">
+        <div class="remember">
+         
+        
 
-      <button type="submit" class="btn-login">Login</button>
+      <button type="submit" class="btn-login">Sign In</button> <br>
     </form>
 
-    <div class="register-link">
-      Don’t have an account? <a href="{% url 'register' %}">Register Here</a>
+  
+
+  
+
+    <br><div class="register-link">
+      Don't have an account?  <a href="{% url 'register' %}">Create account</a>
     </div>
   </div>
+
+  <script>
+    // Simple animation for form elements
+    document.addEventListener('DOMContentLoaded', function() {
+      const inputs = document.querySelectorAll('input');
+      
+      inputs.forEach(input => {
+        // Add focus effect
+        input.addEventListener('focus', function() {
+          this.parentElement.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', function() {
+          if (this.value === '') {
+            this.parentElement.classList.remove('focused');
+          }
+        });
+        
+        // Check if input has value on page load
+        if (input.value !== '') {
+          input.parentElement.classList.add('focused');
+        }
+      });
+      
+      // Social login buttons interaction
+      const socialButtons = document.querySelectorAll('.social-btn');
+      socialButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          // In a real application, this would trigger OAuth flow
+          alert('Social login functionality would be implemented here');
+        });
+      });
+    });
+  </script>
 
 </body>
 </html>

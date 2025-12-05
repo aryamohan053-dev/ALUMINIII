@@ -26,8 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # Your custom app
+    'django.contrib.humanize',   # <-- ensure this line is present
     'pages',
 ]
 
