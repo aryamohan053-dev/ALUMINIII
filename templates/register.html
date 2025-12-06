@@ -488,6 +488,9 @@
         studentToggle.classList.add('selected');
         teacherToggle.classList.remove('selected');
         roleInput.value = 'student';
+
+        [...studentForm.querySelectorAll('input, select')].forEach(el => el.disabled = false);
+        [...teacherForm.querySelectorAll('input, select')].forEach(el => el.disabled = true);
       });
 
       teacherToggle.addEventListener('click', () => {
@@ -496,6 +499,9 @@
         teacherToggle.classList.add('selected');
         studentToggle.classList.remove('selected');
         roleInput.value = 'teacher';
+
+        [...teacherForm.querySelectorAll('input, select')].forEach(el => el.disabled = false);
+        [...studentForm.querySelectorAll('input, select')].forEach(el => el.disabled = true);
       });
 
       // Password toggle functionality

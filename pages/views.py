@@ -131,16 +131,31 @@ def register_view(request):
 # ---------------- Login ----------------
 def login_view(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
+        email = request.POST.get('email').lower().strip()
         password = request.POST.get('password')
 
-        user = authenticate(request, username=email, password=password)
-        if user:
-            login(request, user)
-            messages.success(request, "✅ Login successful!")
+        print("Email entered:", email)
+        print("Password entered:", password)
+
+        try:
+            user = User.objects.get(email=email)
+            print("User found:", user.username)
+        except User.DoesNotExist:
+            messages.error(request, "Email not registered.")
+            print("ERROR: Email not found in database")
+            return redirect('login')
+
+        # Now authenticate using the stored username
+        user_auth = authenticate(request, username=user.username, password=password)
+
+        if user_auth:
+            login(request, user_auth)
+            messages.success(request, "🎉 Login successful!")
+            print("SUCCESS: Logged in")
             return redirect('dashboard')
         else:
-            messages.error(request, "❌ Invalid email or password.")
+            messages.error(request, "Incorrect password.")
+            print("ERROR: Wrong password - Authentication failed")
             return redirect('login')
 
     return render(request, 'login.html')
