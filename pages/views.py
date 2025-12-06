@@ -239,6 +239,16 @@ def profile_view(request):
         'student_profile': student_profile
     })
 
+@login_required
+def profile_edit(request):
+    if request.method == 'POST':
+        request.user.first_name = request.POST.get('first_name', request.user.first_name)
+        request.user.last_name = request.POST.get('last_name', request.user.last_name)
+        request.user.save()
+        messages.success(request, "Profile updated.")
+        return redirect('pages:profile')
+    return render(request, 'profile_edit.html')
+
 
 # ---------------- Memory Gallery ----------------
 @login_required(login_url='login')
