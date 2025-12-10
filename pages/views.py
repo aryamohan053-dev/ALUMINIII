@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Sum
+from .models import StudentProfile
 
 # Import only models guaranteed to exist at module import time.
 try:
@@ -226,6 +227,8 @@ def dashboard_view(request):
 
 # ---------------- Profile ----------------
 @login_required(login_url='login')
+# ---------------- Profile View ----------------
+@login_required(login_url='login')
 def profile_view(request):
     user = request.user
     
@@ -239,15 +242,62 @@ def profile_view(request):
         'student_profile': student_profile
     })
 
-@login_required
-def profile_edit(request):
-    if request.method == 'POST':
-        request.user.first_name = request.POST.get('first_name', request.user.first_name)
-        request.user.last_name = request.POST.get('last_name', request.user.last_name)
-        request.user.save()
-        messages.success(request, "Profile updated.")
-        return redirect('pages:profile')
-    return render(request, 'profile_edit.html')
+
+# ---------------- Profile Edit View ----------------
+@login_required(login_url='login')
+def profile_edit_view(request):
+    student_profile, created = StudentProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        # --- User fields ---
+        user = request.user
+        full_name = request.POST.get("full_name", "").strip()
+
+        if full_name:
+            parts = full_name.split()
+            user.first_name = parts[0]
+            user.last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
+        
+        user.email = request.POST.get("email", "")
+        user.save()
+
+        # --- Student Profile fields ---
+        student_profile.department = request.POST.get("department")
+        student_profile.phone = request.POST.get("phone")
+        student_profile.location = request.POST.get("location")
+        student_profile.current_company = request.POST.get("current_company")
+        student_profile.role = request.POST.get("role")
+
+        # ============ FIX FOR BATCH & YEAR OF PASSING ============
+        batch = request.POST.get("batch")
+
+        # Save batch as text
+        student_profile.batch = batch if batch else None
+
+        # Save year_of_passing only if batch is numeric
+        if batch and batch.isdigit():
+            student_profile.year_of_passing = int(batch)
+        else:
+            student_profile.year_of_passing = None
+        # ==========================================================
+
+        # --- fix experience years ---
+        exp_years = request.POST.get("experience_years")
+        if exp_years and exp_years.isdigit():
+            student_profile.experience_years = int(exp_years)
+        else:
+            student_profile.experience_years = None
+
+        # profile photo
+        if "profile_photo" in request.FILES:
+            student_profile.profile_photo = request.FILES["profile_photo"]
+
+        student_profile.save()
+
+        messages.success(request, "Profile updated successfully.")
+        return redirect("pages:profile")
+
+    return render(request, "profile_edit.html", {"student_profile": student_profile})
 
 
 # ---------------- Memory Gallery ----------------
@@ -259,4 +309,4 @@ def memory_gallery_view(request):
     return render(request, 'memory_gallery.html', {
         'user': user,
         'memories': memories
-    })
+    }) 

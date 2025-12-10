@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 {% load static %}
 {% block title %}My Profile — {{ user.get_full_name|default:user.username }}{% endblock %}
@@ -27,12 +26,20 @@
     <div class="profile-info">
       <h3>{{ user.get_full_name|default:user.username }}</h3>
       <p><i class="fas fa-envelope me-2"></i>{{ user.email|default:"—" }}</p>
-      <p><i class="fas fa-graduation-cap me-2"></i>{% if student_profile and student_profile.department %}{{ student_profile.department }}{% else %}Alumni Member{% endif %}</p>
+      <p><i class="fas fa-graduation-cap me-2"></i>
+        {% if student_profile and student_profile.department %}
+          {{ student_profile.department }}
+        {% else %}
+          Alumni Member
+        {% endif %}
+      </p>
     </div>
 
     <div class="ms-auto">
-      <!-- FIXED HERE (removed pages:) -->
-      <a href="{% url 'profile_edit' %}" class="btn btn-edit"><i class="fas fa-edit me-2"></i>Edit Profile</a>
+      <!-- Corrected with namespace -->
+      <a href="{% url 'pages:profile_edit' %}" class="btn btn-edit">
+        <i class="fas fa-edit me-2"></i>Edit Profile
+      </a>
     </div>
   </div>
 
@@ -45,7 +52,20 @@
         <p><strong>Department:</strong> {{ student_profile.department|default:"—" }}</p>
       </div>
       <div class="col-md-6">
-        <p><strong>Batch:</strong> {{ student_profile.batch|default:student_profile.year_of_passing|default:"—" }}</p>
+        <p><strong>Batch:</strong>
+  {% if student_profile %}
+      {% if student_profile.batch %}
+          {{ student_profile.batch }}
+      {% elif student_profile.year_of_passing %}
+          {{ student_profile.year_of_passing }}
+      {% else %}
+          —
+      {% endif %}
+  {% else %}
+      —
+  {% endif %}
+</p>
+
         <p><strong>Location:</strong> {{ student_profile.location|default:"—" }}</p>
         <p><strong>Contact:</strong> {{ student_profile.phone|default:"—" }}</p>
       </div>
@@ -56,11 +76,17 @@
     <h5><i class="fas fa-briefcase me-2"></i>Professional Details</h5>
     <p><strong>Current Company:</strong> {{ student_profile.current_company|default:"—" }}</p>
     <p><strong>Role:</strong> {{ student_profile.role|default:"—" }}</p>
-    <p><strong>Experience:</strong> {{ student_profile.experience_years|default:"—" }} {% if student_profile.experience_years %}years{% endif %}</p>
+    <p><strong>Experience:</strong>
+      {{ student_profile.experience_years|default:"—" }}
+      {% if student_profile.experience_years %}years{% endif %}
+    </p>
   </div>
 
   <div class="text-center mt-4">
-    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+    <!-- Corrected with namespace -->
+    <a href="{% url 'pages:dashboard' %}" class="btn btn-outline-secondary">
+      <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
   </div>
 </div>
 {% endblock %}

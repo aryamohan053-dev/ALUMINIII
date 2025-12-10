@@ -20,8 +20,8 @@ urlpatterns = [
 
     # 🧍 Profile
     path('profile/', views.profile_view, name='profile'),
-    path('profile/edit/', views.profile_edit, name='profile_edit'),
-    path("profile/edit/", views.profile_edit, name="profile_edit"),
+    path('profile/edit/', views.profile_edit_view, name='profile_edit'),
+
 
     # 🖼️ Memory Gallery
     path('memory-gallery/', views.memory_gallery_view, name='memory_gallery'),

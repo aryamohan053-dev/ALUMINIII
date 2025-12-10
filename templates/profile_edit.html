@@ -1,0 +1,134 @@
+
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Edit Profile — {{ user.get_full_name|default:user.username }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .profile-container{max-width:900px;margin:50px auto;background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.1);padding:30px}
+  .profile-header{display:flex;align-items:center;gap:20px;border-bottom:2px solid #eee;padding-bottom:20px;margin-bottom:20px}
+  .profile-header img{width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid #3498db}
+  .form-control{border-radius:8px}
+  .btn-save{background:#3498db;color:#fff;border:none;border-radius:8px;padding:8px 20px;transition:.3s}
+  .btn-save:hover{background:#2980b9}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container profile-container">
+  <h3 class="mb-4"><i class="fas fa-edit me-2"></i>Edit Profile</h3>
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <div class="profile-header">
+      {% if student_profile.profile_photo %}
+        <img src="{{ student_profile.profile_photo.url }}" alt="Profile Picture">
+      {% else %}
+        <img src="{% static 'images/default-avatar.png' %}" alt="Profile Picture">
+      {% endif %}
+
+      <div class="profile-info flex-grow-1">
+
+        <!-- Full Name -->
+        <div class="mb-3">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-control" name="full_name" value="{{ user.get_full_name }}">
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" name="email" value="{{ user.email }}">
+        </div>
+
+        <!-- Profile Photo -->
+        <div class="mb-3">
+          <label class="form-label">Profile Photo</label>
+          <input type="file" class="form-control" name="profile_photo">
+        </div>
+
+      </div>
+    </div>
+
+    <hr>
+
+    <h5>Personal Information</h5>
+    <div class="row">
+
+      <!-- Roll Number -->
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label class="form-label">Roll Number</label>
+          <input type="text" class="form-control" name="roll_number" value="{{ student_profile.roll_number }}">
+        </div>
+
+        <!-- Department -->
+        <div class="mb-3">
+          <label class="form-label">Department</label>
+          <input type="text" class="form-control" name="department" value="{{ student_profile.department }}">
+        </div>
+
+        <!-- Batch -->
+        <div class="mb-3">
+          <label class="form-label">Batch</label>
+          <input type="text" class="form-control" name="batch" value="{{ student_profile.batch }}">
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <!-- Year of Passing -->
+        <div class="mb-3">
+          <label class="form-label">Year of Passing</label>
+          <input type="text" class="form-control" name="year_of_passing" value="{{ student_profile.year_of_passing }}">
+        </div>
+
+        <!-- Location -->
+        <div class="mb-3">
+          <label class="form-label">Location</label>
+          <input type="text" class="form-control" name="location" value="{{ student_profile.location }}">
+        </div>
+
+        <!-- Contact -->
+        <div class="mb-3">
+          <label class="form-label">Contact</label>
+          <input type="text" class="form-control" name="phone" value="{{ student_profile.phone }}">
+        </div>
+      </div>
+
+    </div>
+
+    <hr>
+
+    <h5>Professional Details</h5>
+
+    <!-- Current Company -->
+    <div class="mb-3">
+      <label class="form-label">Current Company</label>
+      <input type="text" class="form-control" name="current_company" value="{{ student_profile.current_company }}">
+    </div>
+
+    <!-- Role -->
+    <div class="mb-3">
+      <label class="form-label">Role</label>
+      <input type="text" class="form-control" name="role" value="{{ student_profile.role }}">
+    </div>
+
+    <!-- Experience -->
+    <div class="mb-3">
+      <label class="form-label">Experience (Years)</label>
+      <input type="number" class="form-control" name="experience_years" value="{{ student_profile.experience_years }}">
+    </div>
+
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-save">
+        <i class="fas fa-save me-2"></i>Save Changes
+      </button>
+      <a href="{% url 'profile' %}" class="btn btn-outline-secondary ms-2">
+        <i class="fas fa-arrow-left me-2"></i>Back to Profile
+      </a>
+    </div>
+
+  </form>
+</div>
+{% endblock %}

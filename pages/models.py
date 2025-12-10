@@ -14,16 +14,22 @@ class StaffProfile(models.Model):
 # ================= Student Profile =================
 class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    roll_number = models.CharField(max_length=50, blank=True)          # required by view
-    year_of_passing = models.IntegerField(null=True, blank=True)       # student_year
-    phone = models.CharField(max_length=20, blank=True)                # student_phone
-    department = models.CharField(max_length=100, blank=True)
-    profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)  # student_photo
-    bio = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    roll_number = models.CharField(max_length=50, blank=True, null=True)
+    department = models.CharField(max_length=100, blank=True, null=True)
+    batch = models.CharField(max_length=20, blank=True, null=True)
+    year_of_passing = models.IntegerField(blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    current_company = models.CharField(max_length=100, blank=True, null=True)
+    role = models.CharField(max_length=100, blank=True, null=True)
+    experience_years = models.IntegerField(blank=True, null=True)
+    profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
     
+    # ADD THIS
+    location = models.CharField(max_length=200, blank=True, null=True)
+
     def __str__(self):
-        return self.user.get_full_name() or self.user.username
+        return self.user.username
+
     
     @property
     def batch_year(self):
