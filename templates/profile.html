@@ -1,92 +1,876 @@
 {% extends "base.html" %}
 {% load static %}
+{% load humanize %}
+
 {% block title %}My Profile — {{ user.get_full_name|default:user.username }}{% endblock %}
 
 {% block extra_css %}
 <style>
-  .profile-container{max-width:900px;margin:50px auto;background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.1);padding:30px}
-  .profile-header{display:flex;align-items:center;gap:20px;border-bottom:2px solid #eee;padding-bottom:20px;margin-bottom:20px}
-  .profile-header img{width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid #3498db}
-  .profile-info h3{margin:0;color:#2c3e50}
-  .profile-info p{color:#777;margin-bottom:5px}
-  .btn-edit{background:#3498db;color:#fff;border:none;border-radius:8px;padding:8px 20px;transition:.3s}
-  .btn-edit:hover{background:#2980b9}
+  :root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --card-gradient: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    --shadow-sm: 0 2px 15px rgba(0, 0, 0, 0.07);
+    --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 15px 50px rgba(0, 0, 0, 0.15);
+  }
+  
+  .profile-container {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: #f5f7fb;
+    padding: 20px;
+  }
+  
+  .profile-header-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+  }
+  
+  .profile-header-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+  }
+  
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 30px;
+  }
+  
+  .profile-avatar {
+    position: relative;
+  }
+  
+  .avatar-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid white;
+    box-shadow: var(--shadow-md);
+    background: var(--card-gradient);
+  }
+  
+  .avatar-edit-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .avatar-edit-btn:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .profile-info {
+    flex: 1;
+  }
+  
+  .profile-name {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 5px;
+  }
+  
+  .profile-title {
+    font-size: 1.1rem;
+    color: #718096;
+    margin-bottom: 15px;
+    font-weight: 500;
+  }
+  
+  .profile-stats {
+    display: flex;
+    gap: 25px;
+    margin-top: 20px;
+  }
+  
+  .stat-item {
+    text-align: center;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    display: block;
+  }
+  
+  .stat-label {
+    font-size: 0.85rem;
+    color: #718096;
+  }
+  
+  .profile-actions {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .btn-edit {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 30px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+  
+  .btn-edit:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    color: white;
+  }
+  
+  .btn-outline-primary {
+    border: 2px solid #667eea;
+    color: #667eea;
+    border-radius: 12px;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-outline-primary:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-3px);
+  }
+  
+  /* Profile Sections */
+  .profile-sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+  }
+  
+  .profile-section {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+  }
+  
+  .profile-section:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-5px);
+  }
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .section-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #667eea;
+    font-size: 1.2rem;
+  }
+  
+  .section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+  }
+  
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  .info-item {
+    padding: 15px;
+    background: #f7fafc;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+  
+  .info-item:hover {
+    background: #edf2f7;
+    transform: translateX(5px);
+  }
+  
+  .info-label {
+    font-size: 0.85rem;
+    color: #718096;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  
+  .info-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+  }
+  
+  .info-value.empty {
+    color: #a0aec0;
+    font-style: italic;
+    font-weight: normal;
+  }
+  
+  .info-value a {
+    color: #667eea;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .info-value a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Bio Section */
+  .bio-section {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 30px;
+  }
+  
+  .bio-content {
+    line-height: 1.8;
+    color: #4a5568;
+    font-size: 1.05rem;
+  }
+  
+  .empty-bio {
+    text-align: center;
+    padding: 40px 20px;
+    color: #a0aec0;
+  }
+  
+  .empty-bio i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.3;
+  }
+  
+  /* Skills/Tags */
+  .skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .skill-tag {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  
+  /* Contact Info */
+  .contact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 0;
+    border-bottom: 1px solid #edf2f7;
+  }
+  
+  .contact-item:last-child {
+    border-bottom: none;
+  }
+  
+  .contact-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #f7fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #667eea;
+  }
+  
+  .contact-details {
+    flex: 1;
+  }
+  
+  .contact-type {
+    font-size: 0.85rem;
+    color: #718096;
+    margin-bottom: 2px;
+  }
+  
+  .contact-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2d3748;
+    margin: 0;
+  }
+  
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 30px;
+  }
+  
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e2e8f0;
+  }
+  
+  .timeline-item {
+    position: relative;
+    margin-bottom: 25px;
+  }
+  
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -26px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #667eea;
+    border: 3px solid white;
+    box-shadow: 0 0 0 3px #667eea;
+  }
+  
+  .timeline-date {
+    font-size: 0.85rem;
+    color: #718096;
+    margin-bottom: 5px;
+  }
+  
+  .timeline-title {
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 5px;
+  }
+  
+  .timeline-description {
+    color: #718096;
+    font-size: 0.95rem;
+  }
+  
+  /* Back Button */
+  .back-container {
+    text-align: center;
+    margin-top: 40px;
+  }
+  
+  .btn-back {
+    background: white;
+    border: 2px solid #e2e8f0;
+    color: #4a5568;
+    border-radius: 12px;
+    padding: 12px 35px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-back:hover {
+    background: #f7fafc;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-sm);
+    color: #4a5568;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .profile-header {
+      flex-direction: column;
+      text-align: center;
+      gap: 20px;
+    }
+    
+    .profile-sections {
+      grid-template-columns: 1fr;
+    }
+    
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .profile-stats {
+      justify-content: center;
+    }
+    
+    .profile-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    .btn-edit, .btn-outline-primary {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container profile-container">
-  <div class="profile-header">
-    {% if student_profile and student_profile.profile_photo %}
-      <img src="{{ student_profile.profile_photo.url }}" alt="Profile Picture">
-    {% else %}
-      <img src="{% static 'images/default-avatar.png' %}" alt="Profile Picture">
-    {% endif %}
-
-    <div class="profile-info">
-      <h3>{{ user.get_full_name|default:user.username }}</h3>
-      <p><i class="fas fa-envelope me-2"></i>{{ user.email|default:"—" }}</p>
-      <p><i class="fas fa-graduation-cap me-2"></i>
-        {% if student_profile and student_profile.department %}
-          {{ student_profile.department }}
+<div class="profile-container">
+  <!-- Profile Header Card -->
+  <div class="profile-header-card fade-in">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        {% if student_profile and student_profile.profile_photo %}
+          <img src="{{ student_profile.profile_photo.url }}" alt="Profile Picture" class="avatar-image">
         {% else %}
-          Alumni Member
+          <div class="avatar-image d-flex align-items-center justify-content-center bg-light">
+            <i class="fas fa-user fa-4x text-muted"></i>
+          </div>
         {% endif %}
-      </p>
+        <button class="avatar-edit-btn" onclick="document.getElementById('photoUpload').click()">
+          <i class="fas fa-camera"></i>
+        </button>
+        <input type="file" id="photoUpload" accept="image/*" style="display: none;">
+      </div>
+      
+      <div class="profile-info">
+        <h1 class="profile-name">{{ user.get_full_name|default:user.username }}</h1>
+        <p class="profile-title">
+          <i class="fas fa-briefcase me-2"></i>
+          {% if student_profile.role %}
+            {{ student_profile.role }}
+          {% else %}
+            Alumni Member
+          {% endif %}
+        </p>
+        
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <span class="d-flex align-items-center gap-2">
+            <i class="fas fa-graduation-cap text-primary"></i>
+            <span>{{ student_profile.department|default:"Alumni" }}</span>
+          </span>
+          <span class="text-muted">•</span>
+          <span class="d-flex align-items-center gap-2">
+            <i class="fas fa-calendar text-primary"></i>
+            <span>
+              {% if student_profile.batch %}
+                Batch {{ student_profile.batch }}
+              {% elif student_profile.year_of_passing %}
+                {{ student_profile.year_of_passing }}
+              {% else %}
+                —
+              {% endif %}
+            </span>
+          </span>
+        </div>
+        
+        <p class="text-muted mb-4">
+          <i class="fas fa-envelope me-2"></i>{{ user.email|default:"No email provided" }}
+        </p>
+        
+        <div class="profile-stats">
+          <div class="stat-item">
+            <span class="stat-value">{{ memories_count|default:"0" }}</span>
+            <span class="stat-label">Memories</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ events_attended|default:"0" }}</span>
+            <span class="stat-label">Events</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ connections|default:"0" }}</span>
+            <span class="stat-label">Connections</span>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <div class="ms-auto">
-      <!-- Corrected with namespace -->
+    
+    <div class="profile-actions">
       <a href="{% url 'pages:profile_edit' %}" class="btn btn-edit">
         <i class="fas fa-edit me-2"></i>Edit Profile
       </a>
+      <a href="#" class="btn btn-outline-primary">
+        <i class="fas fa-share-alt me-2"></i>Share Profile
+      </a>
+      <a href="#" class="btn btn-outline-primary">
+        <i class="fas fa-download me-2"></i>Download CV
+      </a>
     </div>
   </div>
-
-  <div class="profile-details">
-    <h5><i class="fas fa-info-circle me-2"></i>Personal Information</h5>
-    <div class="row">
-      <div class="col-md-6">
-        <p><strong>Full Name:</strong> {{ user.get_full_name|default:"—" }}</p>
-        <p><strong>Email:</strong> {{ user.email|default:"—" }}</p>
-        <p><strong>Department:</strong> {{ student_profile.department|default:"—" }}</p>
+  
+  <!-- Profile Sections Grid -->
+  <div class="profile-sections">
+    <!-- Personal Information -->
+    <div class="profile-section fade-in">
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fas fa-user-circle"></i>
+        </div>
+        <h3 class="section-title">Personal Information</h3>
       </div>
-      <div class="col-md-6">
-        <p><strong>Batch:</strong>
-  {% if student_profile %}
-      {% if student_profile.batch %}
-          {{ student_profile.batch }}
-      {% elif student_profile.year_of_passing %}
-          {{ student_profile.year_of_passing }}
-      {% else %}
-          —
+      
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Full Name</div>
+          <div class="info-value">{{ user.get_full_name|default:"—" }}</div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Email Address</div>
+          <div class="info-value">{{ user.email|default:"—" }}</div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Department</div>
+          <div class="info-value">{{ student_profile.department|default:"—" }}</div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Batch/Year</div>
+          <div class="info-value">
+            {% if student_profile.batch %}
+              {{ student_profile.batch }}
+            {% elif student_profile.year_of_passing %}
+              {{ student_profile.year_of_passing }}
+            {% else %}
+              —
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Location</div>
+          <div class="info-value">{{ student_profile.location|default:"—" }}</div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Contact Number</div>
+          <div class="info-value">{{ student_profile.phone|default:"—" }}</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Professional Information -->
+    <div class="profile-section fade-in">
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fas fa-briefcase"></i>
+        </div>
+        <h3 class="section-title">Professional Details</h3>
+      </div>
+      
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Current Company</div>
+          <div class="info-value {% if not student_profile.current_company %}empty{% endif %}">
+            {{ student_profile.current_company|default:"Not specified" }}
+          </div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Role/Position</div>
+          <div class="info-value {% if not student_profile.role %}empty{% endif %}">
+            {{ student_profile.role|default:"Not specified" }}
+          </div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Experience</div>
+          <div class="info-value">
+            {% if student_profile.experience_years %}
+              {{ student_profile.experience_years }} year{{ student_profile.experience_years|pluralize }}
+            {% else %}
+              —
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Industry</div>
+          <div class="info-value {% if not student_profile.industry %}empty{% endif %}">
+            {{ student_profile.industry|default:"Not specified" }}
+          </div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">LinkedIn</div>
+          <div class="info-value {% if not student_profile.linkedin %}empty{% endif %}">
+            {% if student_profile.linkedin %}
+              <a href="{{ student_profile.linkedin }}" target="_blank" class="text-primary">View Profile</a>
+            {% else %}
+              Not provided
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">GitHub</div>
+          <div class="info-value {% if not student_profile.github %}empty{% endif %}">
+            {% if student_profile.github %}
+              <a href="{{ student_profile.github }}" target="_blank" class="text-primary">View Profile</a>
+            {% else %}
+              Not provided
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      
+      {% if student_profile.skills %}
+      <div class="mt-4">
+        <h6 class="mb-3 text-muted">Skills & Expertise</h6>
+        <div class="skills-container">
+          <!-- Fixed: Use string methods instead of split filter -->
+          {% with skills_list=student_profile.skills|stringformat:"s"|slice:":-1"|add:"," %}
+            {% for skill in skills_list.split %}
+              {% if skill and skill != ',' %}
+                <span class="skill-tag">{{ skill|cut:","|cut:"," }}</span>
+              {% endif %}
+            {% endfor %}
+          {% endwith %}
+        </div>
+      </div>
       {% endif %}
-  {% else %}
-      —
-  {% endif %}
-</p>
-
-        <p><strong>Location:</strong> {{ student_profile.location|default:"—" }}</p>
-        <p><strong>Contact:</strong> {{ student_profile.phone|default:"—" }}</p>
+    </div>
+  </div>
+  
+  <!-- Bio/About Section -->
+  <div class="profile-section fade-in">
+    <div class="section-header">
+      <div class="section-icon">
+        <i class="fas fa-info-circle"></i>
+      </div>
+      <h3 class="section-title">About Me</h3>
+    </div>
+    
+    {% if student_profile.bio %}
+      <div class="bio-content">
+        {{ student_profile.bio|linebreaks }}
+      </div>
+    {% else %}
+      <div class="empty-bio">
+        <i class="fas fa-quote-left"></i>
+        <p class="mb-3">No bio added yet. Share something about yourself!</p>
+        <a href="{% url 'pages:profile_edit' %}" class="btn btn-outline-primary">
+          <i class="fas fa-plus me-2"></i>Add Bio
+        </a>
+      </div>
+    {% endif %}
+  </div>
+  
+  <!-- Education & Career Timeline -->
+  <div class="profile-sections">
+    <div class="profile-section fade-in">
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
+        <h3 class="section-title">Education</h3>
+      </div>
+      
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-date">{% if student_profile.year_of_passing %}{{ student_profile.year_of_passing }}{% else %}—{% endif %}</div>
+          <h4 class="timeline-title">{{ student_profile.department|default:"Alumni Program" }}</h4>
+          <p class="timeline-description">
+            {% if student_profile.degree %}{{ student_profile.degree }}{% else %}Alumni Member{% endif %}
+          </p>
+        </div>
+        
+        <!-- Add more education entries if available -->
+        {% if student_profile.additional_education %}
+          <div class="timeline-item">
+            <div class="timeline-date">Additional Education</div>
+            <h4 class="timeline-title">{{ student_profile.additional_education.title }}</h4>
+            <p class="timeline-description">{{ student_profile.additional_education.description }}</p>
+          </div>
+        {% endif %}
       </div>
     </div>
-
-    <hr>
-
-    <h5><i class="fas fa-briefcase me-2"></i>Professional Details</h5>
-    <p><strong>Current Company:</strong> {{ student_profile.current_company|default:"—" }}</p>
-    <p><strong>Role:</strong> {{ student_profile.role|default:"—" }}</p>
-    <p><strong>Experience:</strong>
-      {{ student_profile.experience_years|default:"—" }}
-      {% if student_profile.experience_years %}years{% endif %}
-    </p>
+    
+    <div class="profile-section fade-in">
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fas fa-briefcase"></i>
+        </div>
+        <h3 class="section-title">Career Timeline</h3>
+      </div>
+      
+      <div class="timeline">
+        {% if student_profile.current_company %}
+        <div class="timeline-item">
+          <div class="timeline-date">Present</div>
+          <h4 class="timeline-title">{{ student_profile.role|default:"Professional" }}</h4>
+          <p class="timeline-description">{{ student_profile.current_company }}</p>
+          {% if student_profile.experience_years %}
+            <small class="text-muted">{{ student_profile.experience_years }} year{{ student_profile.experience_years|pluralize }} experience</small>
+          {% endif %}
+        </div>
+        {% endif %}
+        
+        <!-- Add previous experiences if available -->
+        {% if student_profile.previous_experience %}
+          <div class="timeline-item">
+            <div class="timeline-date">Previous Role</div>
+            <h4 class="timeline-title">{{ student_profile.previous_experience.title }}</h4>
+            <p class="timeline-description">{{ student_profile.previous_experience.company }}</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
   </div>
-
-  <div class="text-center mt-4">
-    <!-- Corrected with namespace -->
-    <a href="{% url 'pages:dashboard' %}" class="btn btn-outline-secondary">
+  
+  <!-- Back to Dashboard -->
+  <div class="back-container fade-in">
+    <a href="{% url 'pages:dashboard' %}" class="btn btn-back">
       <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
     </a>
   </div>
 </div>
+
+<script>
+  // Animation for fade-in elements
+  document.addEventListener('DOMContentLoaded', function() {
+    const fadeElements = document.querySelectorAll('.fade-in');
+    fadeElements.forEach((el, index) => {
+      el.style.animationDelay = `${index * 0.1}s`;
+    });
+    
+    // Handle profile photo upload
+    const photoUpload = document.getElementById('photoUpload');
+    const avatarEditBtn = document.querySelector('.avatar-edit-btn');
+    
+    if (photoUpload && avatarEditBtn) {
+      avatarEditBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        photoUpload.click();
+      });
+      
+      photoUpload.addEventListener('change', function(e) {
+        if (this.files && this.files[0]) {
+          const formData = new FormData();
+          formData.append('profile_photo', this.files[0]);
+          formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+          
+          // Show loading state
+          avatarEditBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+          
+          fetch('{% url "pages:profile_edit" %}', {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              // Update the avatar image
+              const avatar = document.querySelector('.avatar-image');
+              if (avatar.tagName === 'IMG') {
+                avatar.src = data.photo_url + '?t=' + new Date().getTime();
+              } else {
+                const newAvatar = document.createElement('img');
+                newAvatar.src = data.photo_url;
+                newAvatar.className = 'avatar-image';
+                newAvatar.alt = 'Profile Picture';
+                avatar.parentNode.replaceChild(newAvatar, avatar);
+              }
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('Error uploading photo. Please try again.');
+          })
+          .finally(() => {
+            avatarEditBtn.innerHTML = '<i class="fas fa-camera"></i>';
+          });
+        }
+      });
+    }
+    
+    // Add hover effects to info items
+    const infoItems = document.querySelectorAll('.info-item');
+    infoItems.forEach(item => {
+      item.addEventListener('mouseenter', () => {
+        item.style.transform = 'translateX(5px)';
+      });
+      
+      item.addEventListener('mouseleave', () => {
+        item.style.transform = 'translateX(0)';
+      });
+    });
+    
+    // Handle skills display
+    function displaySkills() {
+      const skillsContainer = document.querySelector('.skills-container');
+      if (skillsContainer) {
+        const skillsData = '{{ student_profile.skills|default:"" }}';
+        if (skillsData) {
+          // Parse skills string (assuming comma-separated)
+          const skills = skillsData.split(',').map(skill => skill.trim()).filter(skill => skill);
+          skillsContainer.innerHTML = '';
+          skills.forEach(skill => {
+            const tag = document.createElement('span');
+            tag.className = 'skill-tag';
+            tag.textContent = skill;
+            skillsContainer.appendChild(tag);
+          });
+        }
+      }
+    }
+    
+    // Initialize skills display
+    displaySkills();
+  });
+</script>
 {% endblock %}

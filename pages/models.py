@@ -5,10 +5,18 @@ from django.contrib.auth.models import User
 class StaffProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     designation = models.CharField(max_length=100)
+    department = models.CharField(max_length=100, blank=True, null=True)
+    qualification = models.CharField(max_length=200, blank=True, null=True)
+    experience = models.IntegerField(blank=True, null=True)
+    date_joined = models.DateField(blank=True, null=True)
+    status = models.CharField(max_length=20, default="Active")
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    profile_photo = models.ImageField(upload_to='staff_photos/', blank=True, null=True)
     office_number = models.CharField(max_length=20, blank=True)
-    
+
     def __str__(self):
-        return f"{self.user.get_full_name()} - {self.designation}"
+        return f"{self.user.username} - {self.designation}"
+
 
 
 # ================= Student Profile =================
@@ -59,13 +67,93 @@ class Memory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     description = models.TextField()
-    image = models.ImageField(upload_to='memories/')
-    likes = models.IntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
+    image = models.ImageField(upload_to='memories/', blank=True, null=True)
+    date_posted = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
-        return f"{self.user.username} - {self.title}"
+        return self.title
     
-    class Meta:
-        ordering = ['-created_at']
+    
+
+class Fund(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    target_amount = models.IntegerField()
+    collected_amount = models.IntegerField(default=0)
+    image = models.ImageField(upload_to='funds/', blank=True, null=True)
+
+    def __str__(self):
+        return self.title
+
+
+class Donation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    fund = models.ForeignKey(Fund, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    donated_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} donated ₹{self.amount} to {self.fund}"
+    
+    
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.title} - {self.user.username}"
+    
+    # ================= Registered Students =================
+class Department(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class Student(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    department = models.ForeignKey(
+        Department,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    year = models.CharField(max_length=10)   # e.g., "2025"
+    is_active = models.BooleanField(default=True)
+    registered_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username
+    
+class Alumni(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    graduation_year = models.IntegerField(blank=True, null=True)
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
+    current_company = models.CharField(max_length=100, blank=True, null=True)
+    role = models.CharField(max_length=100, blank=True, null=True)
+    profile_photo = models.ImageField(upload_to='alumni_photos/', blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username
+    
+class Event(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    start_date = models.DateField()
+    end_date = models.DateField(blank=True, null=True)
+    location = models.CharField(max_length=200, blank=True, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='events/', blank=True, null=True)
+
+    def __str__(self):
+        return self.title
+
+
+
+    
+    

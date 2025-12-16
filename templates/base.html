@@ -5,33 +5,92 @@
   {% load humanize %}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  
   <title>{% block title %}Alumni Connect{% endblock %}</title>
 
+  <!-- Bootstrap + Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    /* minimal shared layout */
-    body{font-family:Segoe UI, Tahoma, Verdana, sans-serif;background:#f8f9fa;color:#333}
-    .container-main{max-width:1100px;margin:36px auto;padding:0 16px}
+    body{
+      font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+      background:#f5f6fa;
+      color:#333;
+    }
+    .container-main{
+      max-width:1100px;
+      margin:36px auto;
+      padding:0 16px;
+    }
+    .navbar-brand{
+      font-weight:600;
+    }
   </style>
 
   {% block extra_css %}{% endblock %}
 </head>
+
 <body>
-  <nav class="navbar navbar-expand bg-white shadow-sm">
-    <div class="container-main d-flex align-items-center">
-      <a class="navbar-brand" href="{% url 'dashboard' %}"><i class="fas fa-graduation-cap me-2"></i>Alumni Connect</a>
-      <div class="ms-auto">
-        {% if user.is_authenticated %}
-          <a class="btn btn-sm btn-outline-secondary" href="{% url 'profile' %}"><i class="fas fa-user me-1"></i>{{ user.get_short_name|default:user.username }}</a>
-          <a class="btn btn-sm btn-outline-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-1"></i>Logout</a>
-        {% else %}
-          <a class="btn btn-sm btn-primary" href="{% url 'login' %}">Login</a>
-        {% endif %}
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg bg-white shadow-sm">
+    <div class="container-main">
+
+      <a class="navbar-brand" href="{% url 'dashboard' %}">
+        <i class="fas fa-graduation-cap me-2"></i> Alumni Connect
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse ms-auto" id="navMenu">
+        <ul class="navbar-nav ms-auto">
+
+          {% if user.is_authenticated %}
+
+            <!-- Dashboard Button -->
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'dashboard' %}">
+                <i class="fa-solid fa-house me-1"></i> Dashboard
+              </a>
+            </li>
+
+            <!-- Profile Dropdown -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="fa-solid fa-user me-1"></i>
+                {{ user.get_short_name|default:user.username }}
+              </a>
+
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{% url 'profile' %}">
+                  <i class="fa-solid fa-id-card me-2"></i> My Profile
+                </a></li>
+
+                <li><hr class="dropdown-divider"></li>
+
+                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                  <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+                </a></li>
+              </ul>
+            </li>
+
+          {% else %}
+
+            <!-- login -->
+            <li class="nav-item">
+              <a class="btn btn-primary btn-sm" href="{% url 'login' %}">Login</a>
+            </li>
+
+          {% endif %}
+        </ul>
       </div>
+      
     </div>
   </nav>
+  <!-- End Navbar -->
 
   <main class="container-main">
     {% block content %}{% endblock %}
@@ -42,6 +101,7 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
   {% block extra_js %}{% endblock %}
 </body>
 </html>

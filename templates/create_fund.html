@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Support {{ fund.title }} • Alumni Connect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --card-gradient: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            --shadow-sm: 0 2px 15px rgba(0, 0, 0, 0.07);
+            --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 15px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #f5f7fb 0%, #e9ecef 100%);
+            color: #2d3748;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .donation-container {
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        .donation-card {
+            background: white;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+        
+        .donation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--success-gradient);
+            z-index: 1;
+        }
+        
+        /* Header Section */
+        .donation-header {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            background: var(--success-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            box-shadow: 0 10px 30px rgba(67, 233, 123, 0.3);
+        }
+        
+        .header-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+        
+        .header-content h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #2d3748;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+        
+        .header-content p {
+            color: #718096;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            padding: 30px 40px;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .progress-container {
+            margin-bottom: 25px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: #4a5568;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--success-gradient);
+            border-radius: 10px;
+            transition: width 1.5s ease-in-out;
+            position: relative;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.3) 50%, 
+                transparent 100%);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .stat-card {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .stat-card:hover {
+            background: white;
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #718096;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        /* Donation Form */
+        .donation-form {
+            padding: 40px;
+        }
+        
+        .form-section {
+            margin-bottom: 35px;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+        
+        .section-title h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin: 0;
+        }
+        
+        /* Amount Selection */
+        .amount-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .amount-option {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .amount-option:hover {
+            border-color: #667eea;
+            background: white;
+            transform: translateY(-3px);
+        }
+        
+        .amount-option.selected {
+            background: var(--primary-gradient);
+            border-color: #667eea;
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .custom-amount {
+            position: relative;
+            margin-top: 20px;
+        }
+        
+        .currency-symbol {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: #718096;
+            font-weight: 600;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 16px 20px 16px 40px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-control::placeholder {
+            color: #a0aec0;
+            font-weight: normal;
+        }
+        
+        /* Payment Methods */
+        .payment-methods {
+            margin-bottom: 30px;
+        }
+        
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+        
+        .method-option {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .method-option:hover {
+            border-color: #667eea;
+            background: white;
+        }
+        
+        .method-option.selected {
+            background: white;
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+        }
+        
+        .method-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #4a5568;
+        }
+        
+        .method-name {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 0.9rem;
+        }
+        
+        /* QR Code Section */
+        .qr-section {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .qr-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .qr-header i {
+            color: #667eea;
+            font-size: 1.5rem;
+        }
+        
+        .qr-header h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin: 0;
+        }
+        
+        .qr-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            display: inline-block;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        #upiQR {
+            width: 220px;
+            height: 220px;
+            border-radius: 10px;
+        }
+        
+        .qr-note {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+        
+        /* Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn-donate {
+            flex: 1;
+            background: var(--success-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 18px 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(67, 233, 123, 0.3);
+            cursor: pointer;
+        }
+        
+        .btn-donate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(67, 233, 123, 0.4);
+        }
+        
+        .btn-back {
+            background: white;
+            border: 2px solid #e2e8f0;
+            color: #4a5568;
+            border-radius: 12px;
+            padding: 18px 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            min-width: 180px;
+        }
+        
+        .btn-back:hover {
+            background: #f7fafc;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm);
+            color: #4a5568;
+        }
+        
+        /* Success Message */
+        .success-message {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .success-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--success-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+        }
+        
+        .success-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+        
+        .success-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        
+        .success-card p {
+            color: #718096;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .donation-header {
+                padding: 30px 20px;
+            }
+            
+            .donation-form {
+                padding: 30px 20px;
+            }
+            
+            .amount-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn-back {
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="donation-container">
+        <div class="donation-card">
+            <!-- Header Section -->
+            <div class="donation-header">
+                <div class="header-content">
+                    <div class="header-icon">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <h1>Support {{ fund.title }}</h1>
+                    <p>Your contribution helps build a stronger alumni community and supports meaningful initiatives</p>
+                </div>
+            </div>
+            
+            <!-- Stats Section -->
+            <div class="stats-section">
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Progress</span>
+                        <span>
+                            <strong>₹{{ fund.collected_amount|floatformat:0 }}</strong> of ₹{{ fund.target_amount|floatformat:0 }}
+                        </span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" 
+                             style="width: {% widthratio fund.collected_amount fund.target_amount 100 %}%">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">₹{{ fund.collected_amount|floatformat:0 }}</div>
+                        <div class="stat-label">Amount Collected</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">₹{{ fund.target_amount|floatformat:0 }}</div>
+                        <div class="stat-label">Target Amount</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ fund.donations.count|default:"0" }}</div>
+                        <div class="stat-label">Total Donors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ days_remaining|default:"30" }}</div>
+                        <div class="stat-label">Days Remaining</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Donation Form -->
+            <div class="donation-form">
+                <!-- Amount Selection -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <div class="section-icon">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                        <h3>Select Donation Amount</h3>
+                    </div>
+                    
+                    <div class="amount-grid">
+                        <div class="amount-option" data-amount="100">₹100</div>
+                        <div class="amount-option" data-amount="500">₹500</div>
+                        <div class="amount-option" data-amount="1000">₹1,000</div>
+                        <div class="amount-option" data-amount="2500">₹2,500</div>
+                        <div class="amount-option" data-amount="5000">₹5,000</div>
+                        <div class="amount-option" data-amount="10000">₹10,000</div>
+                    </div>
+                    
+                    <div class="custom-amount">
+                        <span class="currency-symbol">₹</span>
+                        <input type="number" 
+                               id="amount" 
+                               class="form-control" 
+                               placeholder="Enter custom amount"
+                               min="1" 
+                               step="1"
+                               oninput="updateAmount(this.value)">
+                    </div>
+                </div>
+                
+                <!-- Payment Methods -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <div class="section-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <h3>Choose Payment Method</h3>
+                    </div>
+                    
+                    <div class="payment-methods">
+                        <div class="method-grid">
+                            <div class="method-option selected" data-method="upi">
+                                <div class="method-icon">
+                                    <i class="fab fa-google-pay"></i>
+                                </div>
+                                <div class="method-name">UPI/GPay</div>
+                            </div>
+                            <div class="method-option" data-method="card">
+                                <div class="method-icon">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <div class="method-name">Card</div>
+                            </div>
+                            <div class="method-option" data-method="netbanking">
+                                <div class="method-icon">
+                                    <i class="fas fa-university"></i>
+                                </div>
+                                <div class="method-name">Net Banking</div>
+                            </div>
+                            <div class="method-option" data-method="wallet">
+                                <div class="method-icon">
+                                    <i class="fas fa-wallet"></i>
+                                </div>
+                                <div class="method-name">Wallet</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- QR Code Section -->
+                <div class="qr-section" id="qrSection">
+                    <div class="qr-header">
+                        <i class="fas fa-qrcode"></i>
+                        <h4>Scan & Pay via UPI</h4>
+                    </div>
+                    <div class="qr-container">
+                        <img id="upiQR" 
+                             alt="UPI QR Code"
+                             src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=upi://pay?pa=aryamohan053@oksbi&pn=Alumni Fund - {{ fund.title }}&cu=INR">
+                    </div>
+                    <p class="qr-note">Scan using Google Pay, PhonePe, Paytm, or any UPI app</p>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button id="payBtn" class="btn-donate">
+                        <i class="fas fa-donate me-2"></i>
+                        <span id="payBtnText">Donate Now</span>
+                    </button>
+                    <a href="{% url 'dashboard' %}" class="btn-back">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Success Message Modal -->
+    <div class="success-message" id="successMessage">
+        <div class="success-card">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h3>Thank You for Your Donation! ❤️</h3>
+            <p id="successAmount"></p>
+            <p>Your contribution has been recorded. You'll receive a confirmation email shortly.</p>
+            <button class="btn-donate" onclick="closeSuccess()">
+                <i class="fas fa-check me-2"></i>Continue
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const upiId = "aryamohan053@oksbi";
+        const amountInput = document.getElementById("amount");
+        const qrImage = document.getElementById("upiQR");
+        const payBtn = document.getElementById("payBtn");
+        const successMessage = document.getElementById("successMessage");
+        const successAmount = document.getElementById("successAmount");
+        const progressFill = document.getElementById("progressFill");
+        
+        // Preset amounts
+        const presetAmounts = [100, 500, 1000, 2500, 5000, 10000];
+        let selectedAmount = 0;
+        let selectedMethod = 'upi';
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up amount options
+            document.querySelectorAll('.amount-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    selectAmount(parseInt(this.dataset.amount));
+                });
+            });
+            
+            // Set up payment method options
+            document.querySelectorAll('.method-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    selectPaymentMethod(this.dataset.method);
+                });
+            });
+            
+            // Set initial amount
+            selectAmount(500);
+            
+            // Animate progress bar
+            setTimeout(() => {
+                progressFill.style.transition = 'width 2s ease-in-out';
+            }, 500);
+        });
+        
+        function selectAmount(amount) {
+            selectedAmount = amount;
+            amountInput.value = amount;
+            
+            // Update UI
+            document.querySelectorAll('.amount-option').forEach(option => {
+                const optionAmount = parseInt(option.dataset.amount);
+                if (optionAmount === amount) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+            
+            updateQRCode();
+            updatePayButton();
+        }
+        
+        function selectPaymentMethod(method) {
+            selectedMethod = method;
+            
+            // Update UI
+            document.querySelectorAll('.method-option').forEach(option => {
+                if (option.dataset.method === method) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+            
+            // Show/hide QR section based on method
+            const qrSection = document.getElementById('qrSection');
+            qrSection.style.display = method === 'upi' ? 'block' : 'none';
+            
+            updatePayButton();
+        }
+        
+        function updateAmount(value) {
+            const amount = parseInt(value) || 0;
+            if (amount > 0) {
+                selectedAmount = amount;
+                
+                // Remove selection from preset amounts
+                document.querySelectorAll('.amount-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+                updateQRCode();
+                updatePayButton();
+            }
+        }
+        
+        function updateQRCode() {
+            if (selectedAmount > 0) {
+                const qrData = `upi://pay?pa=${upiId}&pn=Alumni Fund - {{ fund.title }}&am=${selectedAmount}&cu=INR&tn=Donation for {{ fund.title }}`;
+                qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrData)}`;
+            }
+        }
+        
+        function updatePayButton() {
+            if (selectedAmount > 0) {
+                payBtn.disabled = false;
+                document.getElementById('payBtnText').textContent = `Donate ₹${selectedAmount.toLocaleString()}`;
+            } else {
+                payBtn.disabled = true;
+                document.getElementById('payBtnText').textContent = 'Donate Now';
+            }
+        }
+        
+        // Pay Now button click
+        payBtn.addEventListener('click', function() {
+            const amount = selectedAmount;
+            
+            if (!amount || amount <= 0) {
+                showError("Please enter a valid donation amount");
+                return;
+            }
+            
+            if (selectedMethod === 'upi') {
+                // Open UPI payment
+                const upiUrl = `upi://pay?pa=${upiId}&pn=Alumni Fund&tn=Donation for {{ fund.title }}&am=${amount}&cu=INR`;
+                
+                // Try to open UPI app
+                window.location.href = upiUrl;
+                
+                // Show success message after delay (simulating payment)
+                setTimeout(() => {
+                    showSuccess(amount);
+                }, 2000);
+            } else {
+                // For other payment methods, show success directly (demo)
+                showSuccess(amount);
+            }
+        });
+        
+        function showSuccess(amount) {
+            successAmount.textContent = `You have successfully donated ₹${amount.toLocaleString()} to "${fund.title}".`;
+            successMessage.style.display = 'flex';
+            
+            // In real app, you would submit the donation to your backend here
+            // fetch('/donate/', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //         'X-CSRFToken': '{{ csrf_token }}'
+            //     },
+            //     body: JSON.stringify({
+            //         amount: amount,
+            //         fund_id: {{ fund.id }},
+            //         payment_method: selectedMethod
+            //     })
+            // });
+        }
+        
+        function closeSuccess() {
+            successMessage.style.display = 'none';
+            // Redirect to dashboard after successful donation
+            window.location.href = "{% url 'dashboard' %}";
+        }
+        
+        function showError(message) {
+            // You can use a more sophisticated error display
+            alert(message);
+        }
+        
+        // Input event listener for custom amount
+        amountInput.addEventListener('input', function() {
+            updateAmount(this.value);
+        });
+        
+        // Add commas to large numbers
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+    </script>
+</body>
+</html>

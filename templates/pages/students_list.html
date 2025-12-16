@@ -1,0 +1,839 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registered Students - Alumni Connect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --danger-gradient: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            --card-gradient: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            --shadow-sm: 0 2px 15px rgba(0, 0, 0, 0.07);
+            --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 15px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fb 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #2d3748;
+        }
+        
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        .page-header {
+            background: white;
+            border-radius: 20px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-md);
+            border-left: 5px solid #667eea;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-header:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0.05;
+        }
+        
+        .page-header h1 {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .page-header .badge {
+            background: var(--primary-gradient);
+            font-size: 0.9rem;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stat-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+        
+        .stat-card:nth-child(2):before { background: var(--success-gradient); }
+        .stat-card:nth-child(3):before { background: var(--secondary-gradient); }
+        .stat-card:nth-child(4):before { background: var(--warning-gradient); }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            color: #667eea;
+        }
+        
+        .stat-card:nth-child(2) .stat-icon {
+            background: linear-gradient(135deg, rgba(67, 233, 123, 0.1) 0%, rgba(56, 249, 215, 0.1) 100%);
+            color: #43e97b;
+        }
+        
+        .stat-card:nth-child(3) .stat-icon {
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+            color: #4facfe;
+        }
+        
+        .stat-card:nth-child(4) .stat-icon {
+            background: linear-gradient(135deg, rgba(250, 112, 154, 0.1) 0%, rgba(254, 225, 64, 0.1) 100%);
+            color: #fa709a;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #2d3748;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #718096;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        
+        /* Search and Filter Bar */
+        .filter-bar {
+            background: white;
+            border-radius: 15px;
+            padding: 20px 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 14px 20px 14px 50px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .search-box input:focus {
+            background: white;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #718096;
+        }
+        
+        .filter-select {
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            background: #f8f9fa;
+            color: #4a5568;
+            appearance: none;
+            min-width: 180px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-select:focus {
+            background: white;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+        
+        /* Table Container */
+        .table-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .table-header h3 {
+            font-weight: 700;
+            color: #2d3748;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .table-header h3 i {
+            color: #667eea;
+            font-size: 1.4rem;
+        }
+        
+        /* Action Buttons */
+        .action-btns {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        /* Table Styling */
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .data-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .data-table th {
+            padding: 18px 20px;
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+            position: relative;
+        }
+        
+        .data-table th:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 20%;
+            height: 60%;
+            width: 1px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .data-table th:last-child:after {
+            display: none;
+        }
+        
+        .data-table tbody tr {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .data-table tbody tr:hover {
+            background: #f8f9fa;
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-table td {
+            padding: 20px;
+            vertical-align: middle;
+            color: #4a5568;
+            border: none;
+        }
+        
+        /* Student Avatar */
+        .student-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e2e8f0;
+            padding: 2px;
+            background: white;
+        }
+        
+        .avatar-placeholder {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #718096;
+            border: 3px solid #e2e8f0;
+        }
+        
+        /* Department Badge */
+        .department-badge {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        
+        .empty-state-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 2.5rem;
+            color: #667eea;
+        }
+        
+        .empty-state h4 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: #718096;
+            max-width: 400px;
+            margin: 0 auto 30px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                min-width: 100%;
+            }
+            
+            .table-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+                text-align: center;
+            }
+            
+            .action-btns {
+                justify-content: center;
+            }
+            
+            .data-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .main-container {
+                padding: 15px;
+                margin: 20px auto;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+        
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+  
+    
+    <!-- Page Header -->
+    <div class="page-header fade-in">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="display-5 mb-2">Student Management</h1>
+                <p class="text-muted mb-0">Manage all registered students in the alumni system</p>
+            </div>
+            <span class="badge">Total: {{ students.count }} Students</span>
+        </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="stats-container fade-in">
+        <div class="stat-card fade-in">
+            <div class="stat-icon">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+            <div class="stat-value">{{ students.count }}</div>
+            <div class="stat-label">Total Students</div>
+        </div>
+        
+        <div class="stat-card fade-in delay-1">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-value">{{ active_students }}</div>
+            <div class="stat-label">Active Students</div>
+        </div>
+        
+        <div class="stat-card fade-in delay-2">
+            <div class="stat-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="stat-value">{{ graduating_this_year }}</div>
+            <div class="stat-label">Graduating This Year</div>
+        </div>
+        
+        <div class="stat-card fade-in delay-3">
+            <div class="stat-icon">
+                <i class="fas fa-building"></i>
+            </div>
+            <div class="stat-value">{{ departments_count }}</div>
+            <div class="stat-label">Departments</div>
+        </div>
+    </div>
+    
+    <!-- Search and Filter Bar -->
+    <div class="filter-bar fade-in">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search students by name, email, or roll number...">
+        </div>
+        
+        <select class="filter-select" id="departmentFilter">
+            <option value="">All Departments</option>
+            {% for dept in departments %}
+                <option value="{{ dept.id }}">{{ dept.name }}</option>
+            {% endfor %}
+        </select>
+        
+        <select class="filter-select" id="yearFilter">
+            <option value="">All Years</option>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+        </select>
+        
+        <button class="btn btn-primary" id="applyFilters">
+            <i class="fas fa-filter me-2"></i> Apply Filters
+        </button>
+        
+        <button class="btn-outline" id="resetFilters">
+            <i class="fas fa-redo me-2"></i> Reset
+        </button>
+    </div>
+    
+    <!-- Students Table -->
+    <div class="table-container fade-in">
+        <div class="table-header">
+            <h3><i class="fas fa-users"></i> Registered Students</h3>
+            <div class="action-btns">
+                <button class="btn-outline" onclick="exportTableToCSV()">
+                    <i class="fas fa-download me-2"></i> Export CSV
+                </button>
+                <button class="btn-primary" onclick="addNewStudent()">
+                    <i class="fas fa-plus me-2"></i> Add New Student
+                </button>
+            </div>
+        </div>
+        
+        {% if students %}
+            <div class="table-responsive">
+                <table class="data-table" id="studentsTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Student Profile</th>
+                            <th>Contact Information</th>
+                            <th>Academic Details</th>
+                            <th>Additional Info</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if student.profile_photo %}
+                                        <img src="{{ student.profile_photo.url }}" class="student-avatar me-3" alt="{{ student.user.get_full_name }}">
+                                    {% else %}
+                                        <div class="avatar-placeholder me-3">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <strong class="d-block">
+                                            {% if student.user.get_full_name %}
+                                                {{ student.user.get_full_name }}
+                                            {% else %}
+                                                {{ student.user.username }}
+                                            {% endif %}
+                                        </strong>
+                                        <small class="text-muted">ID: {{ student.id }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="mb-1">{{ student.user.email }}</div>
+                                <small class="text-muted">{{ student.phone|default:"No phone" }}</small>
+                            </td>
+                            <td>
+                                <div class="mb-1">
+                                    <span class="department-badge">{{ student.department|default:"Not Assigned" }}</span>
+                                </div>
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-id-card me-1"></i>
+                                        Roll: {{ student.roll_number|default:"N/A" }}
+                                    </small>
+                                    <br>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        Year: {{ student.year_of_passing|default:"N/A" }}
+                                    </small>
+                                </div>
+                            </td>
+                            <td>
+                                {% if student.current_company %}
+                                    <div class="mb-1">
+                                        <small><i class="fas fa-briefcase me-1"></i> {{ student.current_company }}</small>
+                                    </div>
+                                {% endif %}
+                                {% if student.role %}
+                                    <div class="mb-1">
+                                        <small><i class="fas fa-user-tie me-1"></i> {{ student.role }}</small>
+                                    </div>
+                                {% endif %}
+                                {% if student.location %}
+                                    <div class="mb-1">
+                                        <small><i class="fas fa-map-marker-alt me-1"></i> {{ student.location }}</small>
+                                    </div>
+                                {% endif %}
+                                {% if student.experience_years %}
+                                    <div class="mb-1">
+                                        <small><i class="fas fa-chart-line me-1"></i> {{ student.experience_years }} yrs exp</small>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewStudent({{ student.id }})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="editStudent({{ student.id }})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete({{ student.id }})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination (Optional) -->
+            {% if students.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if students.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ students.previous_page_number }}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in students.paginator.page_range %}
+                        {% if students.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > students.number|add:'-3' and num < students.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if students.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ students.next_page_number }}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <h4>No Students Found</h4>
+                <p>There are no students registered in the system yet. Start by adding your first student.</p>
+                <button class="btn btn-primary" onclick="addNewStudent()">
+                    <i class="fas fa-plus me-2"></i> Add Your First Student
+                </button>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('#studentsTable tbody tr');
+        
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+    });
+    
+    // Apply filters
+    document.getElementById('applyFilters').addEventListener('click', applyFilters);
+    
+    // Reset filters
+    document.getElementById('resetFilters').addEventListener('click', function() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('departmentFilter').value = '';
+        document.getElementById('yearFilter').value = '';
+        
+        const rows = document.querySelectorAll('#studentsTable tbody tr');
+        rows.forEach(row => row.style.display = '');
+    });
+    
+    function applyFilters() {
+        const deptFilter = document.getElementById('departmentFilter').value;
+        const yearFilter = document.getElementById('yearFilter').value;
+        
+        const rows = document.querySelectorAll('#studentsTable tbody tr');
+        
+        rows.forEach(row => {
+            const deptCell = row.querySelector('.department-badge')?.textContent.toLowerCase() || '';
+            const yearCell = row.querySelector('td:nth-child(4) .text-muted')?.textContent.toLowerCase() || '';
+            
+            let showRow = true;
+            
+            // Department filter
+            if (deptFilter && !deptCell.includes(deptFilter.toLowerCase())) {
+                const deptOption = document.getElementById('departmentFilter').options[document.getElementById('departmentFilter').selectedIndex];
+                const deptText = deptOption.text.toLowerCase();
+                if (!deptCell.includes(deptText)) {
+                    showRow = false;
+                }
+            }
+            
+            // Year filter
+            if (yearFilter && !yearCell.includes(`year: ${yearFilter}`)) {
+                showRow = false;
+            }
+            
+            row.style.display = showRow ? '' : 'none';
+        });
+    }
+    
+    // Student actions
+    function viewStudent(studentId) {
+        alert(`View details for student ID: ${studentId}`);
+        // window.location.href = `/students/${studentId}/`;
+    }
+    
+    function editStudent(studentId) {
+        alert(`Edit student ID: ${studentId}`);
+        // window.location.href = `/students/${studentId}/edit/`;
+    }
+    
+    function addNewStudent() {
+        alert('Add new student - Implement this functionality');
+        // window.location.href = '/students/add/';
+    }
+    
+    function confirmDelete(studentId) {
+        if (confirm('Are you sure you want to delete this student? This action cannot be undone.')) {
+            alert(`Delete student ID: ${studentId}`);
+            // window.location.href = `/students/${studentId}/delete/`;
+        }
+    }
+    
+    // Export to CSV
+    function exportTableToCSV() {
+        let csv = [];
+        const rows = document.querySelectorAll('#studentsTable tr');
+        
+        rows.forEach(row => {
+            const rowData = [];
+            const cols = row.querySelectorAll('td, th');
+            
+            cols.forEach(col => {
+                // Clean up the data (remove icons, buttons, etc.)
+                let text = col.textContent.trim();
+                text = text.replace(/\s+/g, ' '); // Replace multiple spaces with single space
+                rowData.push(`"${text}"`);
+            });
+            
+            csv.push(rowData.join(','));
+        });
+        
+        // Download CSV file
+        const csvContent = csv.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', 'students.csv');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+    
+    // Initialize animations
+    document.addEventListener('DOMContentLoaded', function() {
+        const animatedElements = document.querySelectorAll('.fade-in');
+        animatedElements.forEach((el, index) => {
+            el.style.animationDelay = `${index * 0.1}s`;
+        });
+    });
+</script>
+
+
+</body>
+</html>

@@ -295,8 +295,8 @@
       <p class="subtitle">Sign in to your Alumni Connect account</p>
     </div>
 
-    <form method="POST" action="{% url 'pages:login' %}
-">
+    <form method="POST" action="{% url 'pages:login' %}">
+
       {% csrf_token %}
 
       {% if messages %}

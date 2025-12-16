@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Public Profile</title>
+</head>
+<body>
+
+<h2>{{ profile_user.first_name }} {{ profile_user.last_name }}</h2>
+
+{% if student_profile %}
+    <p><strong>Department:</strong> {{ student_profile.department }}</p>
+    <p><strong>Batch:</strong> {{ student_profile.batch }}</p>
+
+    {% if student_profile.profile_photo %}
+        <img src="{{ student_profile.profile_photo.url }}" width="150">
+    {% endif %}
+{% endif %}
+
+{% if staff_profile %}
+    <p><strong>Department:</strong> {{ staff_profile.department }}</p>
+    <p><strong>Designation:</strong> {{ staff_profile.designation }}</p>
+{% endif %}
+
+<a href="{% url 'pages:memory_gallery' %}">← Back to Gallery</a>
+
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Donate</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5 text-center">
+    <h2>Donate to {{ fund.title }}</h2>
+
+    <p><strong>Target:</strong> ₹{{ fund.target_amount }}</p>
+    <p><strong>Collected:</strong> ₹{{ fund.collected_amount }}</p>
+
+    <!-- Donation Amount -->
+    <div class="mb-3 text-start">
+        <label class="form-label">Donation Amount (₹)</label>
+        <input type="number"
+               id="amount"
+               class="form-control"
+               placeholder="Enter amount"
+               min="1">
+    </div>
+
+    <!-- Pay Now Button -->
+    <button id="payBtn" class="btn btn-success mb-3 w-100">
+        Pay Now (Google Pay)
+    </button>
+
+    <p class="text-muted">OR</p>
+
+    <!-- QR Code -->
+    <h5>Scan & Pay</h5>
+
+    <img id="upiQR"
+         class="img-fluid mb-3"
+         alt="UPI QR Code"
+         src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=upi://pay?pa=aryamohan053@oksbi&pn=Alumni Fund&cu=INR">
+
+    <p class="text-muted">
+        Scan using Google Pay / PhonePe / Paytm
+    </p>
+
+    <!-- Back to Dashboard Button -->
+    <a href="{% url 'dashboard' %}" class="btn btn-primary w-100">
+        Back to Dashboard
+    </a>
+</div>
+
+<script>
+    const upiId = "aryamohan053@oksbi";   // ✅ YOUR REAL UPI ID
+    const amountInput = document.getElementById("amount");
+    const qrImage = document.getElementById("upiQR");
+    const payBtn = document.getElementById("payBtn");
+
+    // 🔁 Update QR dynamically when amount changes
+    amountInput.addEventListener("input", function () {
+        const amount = amountInput.value;
+
+        if (amount && amount > 0) {
+            const qrData = `upi://pay?pa=${upiId}&pn=Alumni Fund&am=${amount}&cu=INR`;
+            qrImage.src =
+                `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrData)}`;
+        }
+    });
+
+    // 📲 Pay Now (works on mobile with Google Pay installed)
+    payBtn.addEventListener("click", function () {
+        const amount = amountInput.value;
+
+        if (!amount || amount <= 0) {
+            alert("Please enter a valid amount");
+            return;
+        }
+
+        const upiUrl =
+            `upi://pay?pa=${upiId}&pn=Alumni Fund&tn=Donation for {{ fund.title }}&am=${amount}&cu=INR`;
+
+        window.location.href = upiUrl;
+    });
+</script>
+
+</body>
+</html>

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import StudentProfile, StaffProfile, Memory
+from .models import Memory
 
 @admin.register(StudentProfile)
 class StudentProfileAdmin(admin.ModelAdmin):
@@ -21,10 +22,9 @@ class StaffProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Memory)
 class MemoryAdmin(admin.ModelAdmin):
-    list_display = ['title', 'get_username', 'likes', 'created_at']
-    search_fields = ['user__username', 'title']
-    readonly_fields = ['created_at', 'updated_at']
-    
+    list_display = ['title', 'user', 'date_posted']  # <-- changed 'alumni' to 'user'
+    readonly_fields = ['date_posted']
+
     def get_username(self, obj):
         return obj.user.username
     get_username.short_description = 'User'
