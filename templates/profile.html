@@ -542,12 +542,8 @@
       <a href="{% url 'pages:profile_edit' %}" class="btn btn-edit">
         <i class="fas fa-edit me-2"></i>Edit Profile
       </a>
-      <a href="#" class="btn btn-outline-primary">
-        <i class="fas fa-share-alt me-2"></i>Share Profile
-      </a>
-      <a href="#" class="btn btn-outline-primary">
-        <i class="fas fa-download me-2"></i>Download CV
-      </a>
+      
+      
     </div>
   </div>
   
@@ -687,27 +683,9 @@
   </div>
   
   <!-- Bio/About Section -->
-  <div class="profile-section fade-in">
-    <div class="section-header">
-      <div class="section-icon">
-        <i class="fas fa-info-circle"></i>
-      </div>
-      <h3 class="section-title">About Me</h3>
-    </div>
+  
     
-    {% if student_profile.bio %}
-      <div class="bio-content">
-        {{ student_profile.bio|linebreaks }}
-      </div>
-    {% else %}
-      <div class="empty-bio">
-        <i class="fas fa-quote-left"></i>
-        <p class="mb-3">No bio added yet. Share something about yourself!</p>
-        <a href="{% url 'pages:profile_edit' %}" class="btn btn-outline-primary">
-          <i class="fas fa-plus me-2"></i>Add Bio
-        </a>
-      </div>
-    {% endif %}
+   
   </div>
   
   <!-- Education & Career Timeline -->

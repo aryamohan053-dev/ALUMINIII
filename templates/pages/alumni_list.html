@@ -1,0 +1,27 @@
+<h2>Alumni List</h2>
+
+<table border="1" cellpadding="10">
+<tr>
+  <th>Name</th>
+  <th>Department</th>
+  <th>Graduation Year</th>
+  <th>Company</th>
+  <th>Status</th>
+</tr>
+
+{% for a in alumni %}
+<tr>
+  <td>{{ a.user.username }}</td>
+  <td>{{ a.department }}</td>
+  <td>{{ a.graduation_year }}</td>
+  <td>{{ a.current_company }}</td>
+  <td>
+    {% if a.verification.is_verified %}
+      ✅ Verified
+    {% else %}
+      ⏳ Pending
+    {% endif %}
+  </td>
+</tr>
+{% endfor %}
+</table>

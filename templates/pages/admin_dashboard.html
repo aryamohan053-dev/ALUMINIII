@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% load static %}
+  {% load humanize %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard | Alumni Management System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #6c757d;
+      --success: #4cc9a7;
+      --warning: #ff9e00;
+      --danger: #ef476f;
+      --info: #4895ef;
+      --dark: #2b2d42;
+      --light: #f8f9fa;
+      --sidebar-width: 260px;
+      --header-height: 70px;
+      --border-radius: 10px;
+      --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      --transition: all 0.3s ease;
+    }
+
+    * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif;}
+    body {background-color: #f5f7fb; color: #333; overflow-x: hidden;}
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: #fff;
+      border-right: 1px solid #eaeaea;
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      padding-top: var(--header-height);
+      transition: var(--transition);
+      overflow-y: auto;
+      z-index: 1000;
+    }
+    .sidebar .nav-link {
+      color: #5a6a85; padding: 12px 20px;
+      border-radius: 8px; font-weight: 500;
+      display: flex; align-items: center; gap: 12px;
+      transition: var(--transition);
+      position: relative;
+    }
+    .sidebar .nav-link.active, .sidebar .nav-link:hover {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff; box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    }
+    .sidebar .badge {position: absolute; right: 20px; font-size: 11px; padding: 3px 8px;}
+    .sidebar .nav-link.active .badge {background: rgba(255,255,255,0.9); color: var(--primary);}
+    .logo-section {padding: 20px; border-bottom: 1px solid #eaeaea; position: fixed; top: 0; width: var(--sidebar-width); background: #fff; z-index:1001;}
+    .logo {font-weight:700; font-size:22px; display:flex; align-items:center; gap:10px; color: var(--dark);}
+    .logo i {color: var(--primary);}
+
+    /* Main content */
+    .main-content {margin-left: var(--sidebar-width); transition: var(--transition); min-height: 100vh;}
+    .header {height: var(--header-height); background:#fff; border-bottom:1px solid #eaeaea; display:flex; justify-content:space-between; align-items:center; padding:0 30px; position:sticky; top:0; z-index:999; box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+    .header-content h1 {font-size:24px; font-weight:600;}
+    .header-content p {color: var(--secondary); font-size:14px; margin:0;}
+    .user-menu {display:flex; align-items:center; gap:20px;}
+    .notification-btn {background:none; border:none; font-size:20px; position:relative;}
+    .notification-badge {position:absolute; top:-5px; right:-5px; background:var(--danger); color:white; font-size:11px; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center;}
+    .user-dropdown .dropdown-toggle {background:none; border:none; display:flex; align-items:center; gap:10px; font-weight:500; color:var(--dark);}
+    .avatar-placeholder {width:40px; height:40px; border-radius:50%; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display:flex; justify-content:center; align-items:center; color:white;}
+
+    /* Stats cards */
+    .stats-grid {display:grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap:20px; padding:30px;}
+    .stats-card {background:#fff; border-radius:var(--border-radius); padding:25px; box-shadow:var(--box-shadow); border:1px solid #eaeaea; transition: var(--transition);}
+    .stats-card:hover {transform:translateY(-5px); box-shadow:0 8px 25px rgba(0,0,0,0.12);}
+    .stats-icon {width:60px; height:60px; border-radius:12px; display:flex; justify-content:center; align-items:center; font-size:24px; color:#fff; margin-bottom:20px;}
+    .card-1 .stats-icon {background:linear-gradient(135deg, var(--primary), var(--primary-dark));}
+    .card-2 .stats-icon {background:linear-gradient(135deg, var(--success), #3db894);}
+    .card-3 .stats-icon {background:linear-gradient(135deg, var(--warning), #ff8a00);}
+    .card-4 .stats-icon {background:linear-gradient(135deg, var(--danger), #e63956);}
+    .stats-value {font-size:32px; font-weight:700;}
+    .stats-label {color:var(--secondary); font-size:14px; margin-bottom:10px;}
+    .stats-trend {display:flex; align-items:center; gap:5px; font-size:13px;}
+    .stats-trend.up {color:var(--success);}
+    .stats-trend.down {color:var(--danger);}
+
+    /* Quick Actions */
+    .quick-actions-grid {display:grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap:15px;}
+    .action-card {background: var(--light); border-radius:10px; padding:20px; text-align:center; cursor:pointer; transition: var(--transition); border:1px solid transparent;}
+    .action-card:hover {background:#fff; border-color:var(--primary); transform:translateY(-3px); box-shadow:0 5px 15px rgba(67,97,238,0.1);}
+    .action-card i {font-size:24px; color:var(--primary); margin-bottom:10px;}
+    .action-card h6 {font-size:14px; font-weight:500; margin:0; color:var(--dark);}
+
+    /* Responsive */
+    @media(max-width:992px){
+      .sidebar {transform:translateX(-100%);}
+      .sidebar.active {transform:translateX(0);}
+      .main-content {margin-left:0;}
+      .menu-toggle {display:flex; position:fixed; top:15px; left:15px; width:45px; height:45px; border-radius:8px; background:var(--primary); color:#fff; justify-content:center; align-items:center; font-size:18px; z-index:1100;}
+      .logo-section{width:100%;}
+    }
+    @media(max-width:768px){
+      .stats-grid{grid-template-columns:repeat(2,1fr);}
+      .quick-actions-grid{grid-template-columns:repeat(2,1fr);}
+    }
+    @media(max-width:576px){
+      .stats-grid,.quick-actions-grid{grid-template-columns:1fr;}
+    }
+
+    /* Animation */
+    .fade-in {animation:fadeIn 0.5s ease forwards;}
+    @keyframes fadeIn {from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);}}
+  </style>
+</head>
+<body>
+  <!-- Mobile Menu Toggle -->
+  <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+
+  <!-- Logo Section -->
+  <div class="logo-section">
+    <div class="logo"><i class="fas fa-university"></i> <span>AlumniHub</span></div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <ul class="nav flex-column">
+      <li class="nav-item"><a class="nav-link active" href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'students' %}"><i class="fas fa-user-graduate"></i> Students <span class="badge">{{ students_count|default:"0" }}</span></a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-users"></i> Alumni <span class="badge">{{ alumni_count|default:"0" }}</span></a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-bullhorn"></i> Announcements <span class="badge">{{ announcements_count|default:"0" }}</span></a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-calendar-alt"></i> Events <span class="badge">{{ events_count|default:"0" }}</span></a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-images"></i> Memory Wall <span class="badge">{{ pending_memories|default:"0" }}</span></a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-donate"></i> Fundraising</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-cog"></i> Settings</a></li>
+      <li class="nav-item mt-4"><a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="mainContent">
+    <div class="header">
+      <div class="header-content">
+        <h1>Welcome, {{ user.first_name|default:user.username }}</h1>
+        <p>Admin Dashboard • Last login: {{ user.last_login|date:"D, M j, Y, H:i A" }}</p>
+      </div>
+      <div class="user-menu">
+        <button class="notification-btn" type="button" data-bs-toggle="dropdown" aria-label="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">{{ notifications_count|default:"3" }}</span>
+        </button>
+        <div class="dropdown user-dropdown">
+          <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            <div class="avatar-placeholder"><i class="fas fa-user-shield"></i></div>
+            Admin <i class="fas fa-chevron-down ms-1"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>
+            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Account Settings</a></li>
+            <li><a class="dropdown-item" href="#"><i class="fas fa-question-circle me-2"></i>Help Center</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats-grid">
+      <div class="stats-card card-1 fade-in">
+        <div class="stats-icon"><i class="fas fa-user-graduate"></i></div>
+        <h2 class="stats-value">{{ students_count|default:"0"|intcomma }}</h2>
+        <p class="stats-label">Total Students</p>
+        <div class="stats-trend up"><i class="fas fa-arrow-up"></i> 15 new this month</div>
+      </div>
+      <div class="stats-card card-2 fade-in">
+        <div class="stats-icon"><i class="fas fa-users"></i></div>
+        <h2 class="stats-value">{{ alumni_count|default:"0"|intcomma }}</h2>
+        <p class="stats-label">Registered Alumni</p>
+        <div class="stats-trend up"><i class="fas fa-arrow-up"></i> 8% growth rate</div>
+      </div>
+      <div class="stats-card card-3 fade-in">
+        <div class="stats-icon"><i class="fas fa-calendar-check"></i></div>
+        <h2 class="stats-value">{{ events_count|default:"0" }}</h2>
+        <p class="stats-label">Upcoming Events</p>
+        <div class="stats-trend down"><i class="fas fa-arrow-down"></i> 2 upcoming</div>
+      </div>
+      <div class="stats-card card-4 fade-in">
+        <div class="stats-icon"><i class="fas fa-images"></i></div>
+        <h2 class="stats-value">{{ pending_memories|default:"0" }}</h2>
+        <p class="stats-label">Pending Memories</p>
+        <div class="stats-trend up"><i class="fas fa-clock"></i> {{ pending_memories|default:"0" }} to review</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Mobile sidebar toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    menuToggle?.addEventListener('click', () => sidebar.classList.toggle('active'));
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 992 && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+        sidebar.classList.remove('active');
+      }
+    });
+
+    // Animation delay
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.fade-in').forEach((card, i) => {
+        card.style.animationDelay = `${i * 0.1}s`;
+      });
+    });
+  </script>
+</body>
+</html>

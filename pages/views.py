@@ -1,19 +1,23 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout as auth_logout, authenticate, login
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
-from django.db.models import Sum
-from .models import StaffProfile, StudentProfile, Memory
-from .forms import MemoryForm
-from .models import Fund
-from .models import Notification
 from django.http import HttpResponseForbidden
-from .models import Student, Department, StaffProfile
-
 from django.utils import timezone
+from django.db.models import Q
+import datetime
+from pages.models import StudentProfile
+from django.contrib.auth.models import User
 
 
+from .models import StudentProfile, Memory, Fund, Student, Department, Alumni,Event
+from .forms import MemoryForm
+
+
+# ---------------- Helper Functions ----------------
+def is_admin(user):
+    return user.is_authenticated and user.is_superuser
 
 
 # ---------------- Home ----------------
@@ -22,12 +26,43 @@ def home_view(request):
     """Redirect users to the appropriate home page based on role."""
     user = request.user
 
-    if StaffProfile.objects.filter(user=user).exists():
-        return redirect('pages:staff_home')
+    if user.is_superuser:
+        return redirect('pages:admin_dashboard')
     elif StudentProfile.objects.filter(user=user).exists():
         return redirect('pages:student_home')
     else:
         return render(request, "home.html")
+def is_admin(user):
+    return user.is_authenticated and user.is_superuser
+
+
+# ---------------- Dashboard (Admin Only) ----------------
+@user_passes_test(is_admin, login_url='login')
+def admin_dashboard(request):
+    context = {
+        'user': request.user,
+        'students_count': StudentProfile.objects.count(),
+        'alumni_count': Alumni.objects.count(),
+        'events_count': Event.objects.count(),
+        'pending_memories': Memory.objects.filter(is_approved=False).count(),
+        'notifications_count': 3,
+        'pending_approvals': 3,
+    }
+    return render(request, 'pages/admin_dashboard.html', context)
+
+@login_required(login_url='login')
+def dashboard_redirect(request):
+    if request.user.is_superuser:
+        return redirect('pages:admin_dashboard')
+    elif StudentProfile.objects.filter(user=request.user).exists():
+        return redirect('pages:student_home')
+    else:
+        return redirect('pages:home')
+
+
+
+
+
 
 # ---------------- Student Home ----------------
 @login_required(login_url='login')
@@ -35,40 +70,22 @@ def student_home_view(request):
     student = get_object_or_404(StudentProfile, user=request.user)
     recent_memories = Memory.objects.filter(user=request.user).order_by('-date_posted')[:6]
 
-
     return render(request, "student_home.html", {
         "student": student,
         "recent_memories": recent_memories,
     })
 
-# ---------------- Staff Home ----------------
-@login_required(login_url='login')
-def staff_home_view(request):
-    staff = StaffProfile.objects.filter(user=request.user).first()
 
-    if not staff:
-        messages.error(request, "You are not authorized as staff.")
-        return redirect('pages:home')
-
-    return render(request, "staff_home.html", {
-        "staff": staff
-    })
-
-@login_required(login_url='login')
-def dashboard_view(request):
-    # your existing dashboard code here
-    return render(request, "dashboard.html")
+# ---------------- Forgot Password ----------------
 def forgot_password_view(request):
     return render(request, "forgot_password.html")
+
 
 # ---------------- Register ----------------
 def register_view(request):
     if request.method == "POST":
         role = request.POST.get("role")
 
-        # -------------------------
-        # STUDENT REGISTRATION
-        # -------------------------
         if role == "student":
             name = request.POST.get("student_name", "").strip()
             email = request.POST.get("student_email", "").strip()
@@ -79,12 +96,10 @@ def register_view(request):
             phone = request.POST.get("student_phone", "").strip()
             photo = request.FILES.get("student_photo")
 
-            # Check duplicate email
             if User.objects.filter(username=email).exists():
                 messages.error(request, "Email is already registered")
                 return redirect("register")
 
-            # Create Django User
             user = User.objects.create_user(
                 username=email,
                 email=email,
@@ -92,67 +107,22 @@ def register_view(request):
                 first_name=name
             )
 
-            # Create StudentProfile
-            
+            StudentProfile.objects.create(
+                user=user,
+                roll_number=roll,
+                department=dept,
+                year_of_passing=year,
+                phone=phone,
+                profile_photo=photo
+            )
 
             messages.success(request, "Student account created successfully!")
             return redirect("login")
 
-        # -------------------------
-        # TEACHER / STAFF REGISTRATION
-        # -------------------------
-        elif role == "teacher":
-            name = request.POST.get("faculty_id", "").strip()
-            email = request.POST.get("teacher_email", "").strip()
-            password = request.POST.get("teacher_password", "")
-            designation = request.POST.get("designation", "").strip()
-            department = request.POST.get("department", "").strip()
-            qualification = request.POST.get("qualification", "").strip()
-            experience = request.POST.get("experience", "").strip()
-            date_joined = request.POST.get("date_joined", "").strip()
-            status = request.POST.get("status", "").strip()
-            phone = request.POST.get("teacher_phone", "").strip()
-            profile_photo = request.FILES.get("teacher_photo")
-
-            # Check duplicate email
-            if User.objects.filter(username=email).exists():
-                messages.error(request, "Email is already registered")
-                return redirect("pages:register")
-
-            # Create Django User
-            user = User.objects.create_user(
-                username=email,
-                email=email,
-                password=password,
-                first_name=name
-            )
-
-            # Create StaffProfile
-            StaffProfile.objects.create(
-                user=user,
-                designation=designation,
-                department=department,
-                qualification=qualification,
-                experience=experience,
-                date_joined=date_joined,
-                status=status,
-                phone=phone,
-                profile_photo=profile_photo
-            )
-
-            messages.success(request, "Teacher/Staff account created successfully!")
-            return redirect("login")
-
-        # -------------------------
-        # INVALID ROLE
-        # -------------------------
         else:
             messages.error(request, "Invalid role selected")
             return redirect("pages:register")
 
-    # -------------------------
-    # GET REQUEST
-    # -------------------------
     return render(request, "register.html")
 
 
@@ -162,7 +132,6 @@ def login_view(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        # Find user by email
         try:
             user_obj = User.objects.get(email=email)
         except User.DoesNotExist:
@@ -170,21 +139,18 @@ def login_view(request):
             return redirect("pages:login")
 
         user = authenticate(request, username=user_obj.username, password=password)
-
         if user is None:
             messages.error(request, "Wrong password")
             return redirect("pages:login")
 
         login(request, user)
 
-        # ROLE CHECK
-        if StaffProfile.objects.filter(user=user).exists():
-            return redirect("pages:staff_home")
-
-        if StudentProfile.objects.filter(user=user).exists():
+        if user.is_superuser:
+            return redirect('pages:admin_dashboard')
+        elif StudentProfile.objects.filter(user=user).exists():
             return redirect("pages:student_home")
-
-        return redirect("pages:home")
+        else:
+            return redirect("pages:home")
 
     return render(request, "login.html")
 
@@ -201,13 +167,17 @@ def logout_view(request):
 def profile_view(request):
     user = request.user
     student_profile = StudentProfile.objects.filter(user=user).first()
-    staff_profile = StaffProfile.objects.filter(user=user).first()
 
     return render(request, 'profile.html', {
         'user': user,
         'student_profile': student_profile,
-        'staff_profile': staff_profile
     })
+
+
+@login_required
+def dashboard_view(request):
+    return render(request, 'dashboard.html')
+
 
 
 # ---------------- Profile Edit ----------------
@@ -215,10 +185,8 @@ def profile_view(request):
 def profile_edit_view(request):
     user = request.user
     student_profile = StudentProfile.objects.filter(user=user).first()
-    staff_profile = StaffProfile.objects.filter(user=user).first()
 
     if request.method == "POST":
-        # --- User fields ---
         full_name = request.POST.get("full_name", "").strip()
         if full_name:
             parts = full_name.split()
@@ -227,7 +195,6 @@ def profile_edit_view(request):
         user.email = request.POST.get("email", "")
         user.save()
 
-        # --- Student profile ---
         if student_profile:
             student_profile.department = request.POST.get("department")
             student_profile.phone = request.POST.get("phone")
@@ -243,17 +210,11 @@ def profile_edit_view(request):
                 student_profile.profile_photo = request.FILES["profile_photo"]
             student_profile.save()
 
-        # --- Staff profile ---
-        if staff_profile:
-            staff_profile.phone = request.POST.get("phone")
-            staff_profile.save()
-
         messages.success(request, "Profile updated successfully.")
         return redirect("pages:profile")
 
     return render(request, "profile_edit.html", {
-        "student_profile": student_profile,
-        "staff_profile": staff_profile
+        "student_profile": student_profile
     })
 
 
@@ -277,33 +238,19 @@ def memory_gallery_view(request):
     })
 
 
-@login_required(login_url='login')
+@login_required
 def memory_detail_view(request, pk):
     memory = get_object_or_404(Memory, pk=pk)
+    return render(request, 'pages/memory_detail.html', {'memory': memory})
 
-    # 🔒 Allow only owner to view full memory
-    if memory.user != request.user:
-        return HttpResponseForbidden("You are not allowed to view this memory.")
 
-    return render(request, 'memory_detail.html', {'memory': memory})
 
+# ---------------- Fund Collection ----------------
 @login_required(login_url='login')
 def fund_collection(request):
     funds = Fund.objects.all()
     return render(request, 'pages/fund_collection.html', {'funds': funds})
 
-@login_required(login_url='login')
-def public_profile_view(request, user_id):
-    profile_user = get_object_or_404(User, id=user_id)
-
-    student_profile = StudentProfile.objects.filter(user=profile_user).first()
-    staff_profile = StaffProfile.objects.filter(user=profile_user).first()
-
-    return render(request, 'public_profile.html', {
-        'profile_user': profile_user,
-        'student_profile': student_profile,
-        'staff_profile': staff_profile
-    })
 
 @login_required(login_url='login')
 def create_fund(request):
@@ -313,7 +260,6 @@ def create_fund(request):
         target_amount = request.POST.get("target_amount")
         image = request.FILES.get("image")
 
-        # 🔒 SAFETY CHECK
         if not title or not target_amount:
             messages.error(request, "Title and target amount are required")
             return redirect("create_fund")
@@ -337,48 +283,28 @@ def donate_fund(request, fund_id):
 
     if request.method == "POST":
         amount = int(request.POST.get("amount"))
-
-        # Update collected amount
         fund.collected_amount += amount
         fund.save()
-
         messages.success(request, "Thank you for your donation!")
         return redirect("fund_collection")
 
     return render(request, "donate_fund.html", {"fund": fund})
 
 
-
-
-
+# ---------------- Notifications ----------------
 def notifications(request):
     return render(request, 'pages/notifications.html')
 
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from pages.models import StudentProfile, Department
-from django.db.models import Count, Q
-import datetime
 
+# ---------------- Students List ----------------
 @login_required
 def students_list(request):
-    # Get all students - check what field you have for ordering
-    # Common fields might be: id, user__date_joined, or check if you have a registration date field
-    students = StudentProfile.objects.all().order_by('-id')  # Order by ID (newest first)
-    
-    # Check what fields your StudentProfile model actually has
-    # Based on error, available fields are: batch, current_company, department, experience_years, 
-    # id, location, phone, profile_photo, role, roll_number, user, user_id, year_of_passing
-    
-    # If you want to order by user creation date (if it exists)
-    # students = StudentProfile.objects.all().order_by('-user__date_joined')
-    
-    # Calculate stats
+    students = StudentProfile.objects.all().order_by('-id')
     current_year = datetime.datetime.now().year
-    
+
     context = {
         'students': students,
-        'active_students': students.count(),  # Or filter by some active status if you have it
+        'active_students': students.count(),
         'graduating_this_year': students.filter(
             Q(year_of_passing=str(current_year)) | Q(year_of_passing=current_year)
         ).count(),
@@ -387,8 +313,69 @@ def students_list(request):
     }
     return render(request, "pages/students_list.html", context)
 
-@login_required(login_url='login')
-def dashboard_view(request):
-    return render(request, "dashboard.html")
+
+# ---------------- Alumni Verification (Admin Only) ----------------
+@user_passes_test(is_admin, login_url='login')
+def alumni_verification(request):
+    students = Student.objects.all()
+    verified_alumni = Alumni.objects.filter(is_verified=True)
+    fake_alumni = Alumni.objects.filter(is_verified=False)
+
+    context = {
+        'students': students,
+        'verified_alumni': verified_alumni,
+        'fake_alumni': fake_alumni,
+    }
+
+    return render(request, 'admin/alumni_verification.html', context)
 
 
+@user_passes_test(is_admin, login_url='login')
+def verify_alumni(request, id):
+    alumni = get_object_or_404(Alumni, id=id)
+    is_real = Student.objects.filter(
+        register_no=alumni.register_no,
+        department=alumni.department,
+    ).exists()
+
+    if is_real:
+        alumni.is_verified = True
+        alumni.verified_date = timezone.now()
+        alumni.save()
+
+    return redirect('pages:alumni_verification')
+
+
+@user_passes_test(is_admin, login_url='login')
+def reject_alumni(request, id):
+    alumni = get_object_or_404(Alumni, id=id)
+    alumni.delete()
+    return redirect('pages:alumni_verification')
+
+@login_required
+def public_profile_view(request, user_id):
+    # Get the clicked user
+    profile_user = get_object_or_404(User, id=user_id)
+
+    # Get that user's student profile
+    student_profile = get_object_or_404(StudentProfile, user=profile_user)
+
+    return render(request, 'pages/public_profile.html', {
+        'profile_user': profile_user,
+        'student_profile': student_profile,
+    })
+
+# views.py (add this to your view)
+@login_required
+def delete_student(request, student_id):
+    if request.method == 'POST':
+        student = get_object_or_404(Student, id=student_id)
+        student_name = student.user.get_full_name() or student.user.username
+        student.delete()
+        messages.success(request, f'Student "{student_name}" has been deleted successfully.')
+        return redirect('students_list')  # Change this to your actual list view name
+    else:
+        # If not POST, redirect to list
+        return redirect('students_list')
+    
+    

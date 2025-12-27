@@ -107,34 +107,7 @@
       border-left: 4px solid var(--error-color);
     }
 
-    .role-toggle {
-      display: flex;
-      background-color: var(--light-color);
-      border-radius: 10px;
-      padding: 6px;
-      margin-bottom: 24px;
-      border: 1px solid var(--border-color);
-    }
-
-    .role-toggle button {
-      flex: 1;
-      background: transparent;
-      border: none;
-      padding: 12px 16px;
-      font-size: 14px;
-      font-weight: 600;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s;
-      color: var(--secondary-color);
-    }
-
-    .role-toggle button.selected {
-      background: var(--primary-color);
-      color: white;
-      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
-    }
-
+    
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -277,15 +250,10 @@
       </ul>
     {% endif %}
 
-    <div class="role-toggle">
-      <button type="button" id="student-toggle" class="selected">Student</button>
-      <button type="button" id="teacher-toggle">Teacher</button>
-    </div>
-
+    
     <form method="POST" action="{% url 'register' %}" enctype="multipart/form-data" id="registrationForm">
       {% csrf_token %}
-      <input type="hidden" name="role" id="role" value="student">
-
+      
       <!-- Student Form -->
       <div id="studentForm">
         <div class="form-grid">
@@ -309,7 +277,7 @@
             <label for="password">Password</label>
             <div class="input-container">
               <input type="password" id="password" name="password" required placeholder="Create a password">
-              <i class="fa-solid fa-eye password-toggle" id="togglePassword"></i>
+              <i class="fa-solid fa-eye-slash  password-toggle" id="togglePassword"></i>
             </div>
           </div>
           
@@ -317,7 +285,7 @@
             <label for="confirm_password">Confirm Password</label>
             <div class="input-container">
               <input type="password" id="confirm_password" name="confirm_password" required placeholder="Confirm your password">
-              <i class="fa-solid fa-eye password-toggle" id="toggleConfirmPassword"></i>
+              <i class="fa-solid fa-eye-slash  password-toggle" id="toggleConfirmPassword"></i>
             </div>
           </div>
           
@@ -365,105 +333,8 @@
         </div>
       </div>
 
-      <!-- Teacher Form -->
-      <div id="teacherForm" style="display:none;">
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="faculty_id">Faculty Name</label>
-            <div class="input-container">
-              <input type="text" id="faculty_id" name="faculty_id" placeholder="Enter faculty Name">
-              <i class="fas fa-id-badge input-icon"></i>
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="teacher_email">Email</label>
-            <div class="input-container">
-              <input type="email" id="teacher_email" name="teacher_email" placeholder="Enter your email">
-              <i class="fas fa-envelope input-icon"></i>
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="teacher_password">Password</label>
-            <div class="input-container">
-              <input type="password" id="teacher_password" name="teacher_password" placeholder="Create a password">
-              <i class="fa-solid fa-eye password-toggle" id="toggleTeacherPassword"></i>
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="teacher_confirm_password">Confirm Password</label>
-            <div class="input-container">
-              <input type="password" id="teacher_confirm_password" name="teacher_confirm_password" placeholder="Confirm your password">
-              <i class="fa-solid fa-eye password-toggle" id="toggleTeacherConfirmPassword"></i>
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="designation">Designation</label>
-            <div class="input-container">
-              <input type="text" id="designation" name="designation" placeholder="Enter your designation">
-              <i class="fas fa-user-tie input-icon"></i>
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="department">Department</label>
-            <select id="department" name="department">
-              <option value="" disabled selected>Select department</option>
-              <option>Computer Science</option>
-              <option>Information Technology</option>
-              <option>Electronics</option>
-              <option>Mechanical</option>
-              <option>Civil</option>
-              <option>MCA</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="qualification">Qualification</label>
-            <div class="input-container">
-              <input type="text" id="qualification" name="qualification" placeholder="Enter your qualifications">
-              <i class="fas fa-graduation-cap input-icon"></i>
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="experience">Experience (Years)</label>
-            <div class="input-container">
-              <input type="number" id="experience" name="experience" placeholder="Years of experience">
-              <i class="fas fa-briefcase input-icon"></i>
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="date_joined">Date Joined</label>
-            <input type="date" id="date_joined" name="date_joined">
-          </div>
-          
-          <div class="form-group">
-            <label for="status">Status</label>
-            <select id="status" name="status">
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="teacher_phone">Phone Number</label>
-            <div class="input-container">
-              <input type="tel" id="teacher_phone" name="teacher_phone" placeholder="Enter your phone number">
-              <i class="fas fa-phone input-icon"></i>
-            </div>
-          </div>
-          
-          <div class="form-group full-width">
-            <label for="teacher_photo">Profile Photo</label>
-            <input type="file" id="teacher_photo" name="teacher_photo" accept="image/*">
-          </div>
-        </div>
-      </div>
+      
+      
 
       <button type="submit">Create Account</button>
     </form>
@@ -474,74 +345,44 @@
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const studentToggle = document.getElementById('student-toggle');
-      const teacherToggle = document.getElementById('teacher-toggle');
-      const studentForm = document.getElementById('studentForm');
-      const teacherForm = document.getElementById('teacherForm');
-      const roleInput = document.getElementById('role');
+    
+  document.addEventListener('DOMContentLoaded', () => {
 
-      // Role toggle functionality
-      studentToggle.addEventListener('click', () => {
-        studentForm.style.display = 'block';
-        teacherForm.style.display = 'none';
-        studentToggle.classList.add('selected');
-        teacherToggle.classList.remove('selected');
-        roleInput.value = 'student';
+    function togglePassword(toggleId, inputId) {
+      const toggle = document.getElementById(toggleId);
+      const input = document.getElementById(inputId);
 
-        [...studentForm.querySelectorAll('input, select')].forEach(el => el.disabled = false);
-        [...teacherForm.querySelectorAll('input, select')].forEach(el => el.disabled = true);
-      });
+     if (!toggle || !input) return;
 
-      teacherToggle.addEventListener('click', () => {
-        studentForm.style.display = 'none';
-        teacherForm.style.display = 'block';
-        teacherToggle.classList.add('selected');
-        studentToggle.classList.remove('selected');
-        roleInput.value = 'teacher';
-
-        [...teacherForm.querySelectorAll('input, select')].forEach(el => el.disabled = false);
-        [...studentForm.querySelectorAll('input, select')].forEach(el => el.disabled = true);
-      });
-
-      // Password toggle functionality
-      function togglePassword(toggleId, inputId) {
-        const toggle = document.getElementById(toggleId);
-        const input = document.getElementById(inputId);
-        if (toggle && input) {
-          toggle.addEventListener('click', () => {
-            input.type = input.type === 'password' ? 'text' : 'password';
-            toggle.classList.toggle('fa-eye-slash');
-          });
-        }
+    toggle.addEventListener('click', () => {
+      if (input.type === 'password') {
+        input.type = 'text';
+        toggle.classList.remove('fa-eye-slash');
+        toggle.classList.add('fa-eye');
+      } else {
+        input.type = 'password';
+        toggle.classList.remove('fa-eye');
+        toggle.classList.add('fa-eye-slash');
       }
-
-      togglePassword('togglePassword', 'password');
-      togglePassword('toggleConfirmPassword', 'confirm_password');
-      togglePassword('toggleTeacherPassword', 'teacher_password');
-      togglePassword('toggleTeacherConfirmPassword', 'teacher_confirm_password');
-
-      // Form validation
-      const registrationForm = document.getElementById('registrationForm');
-      registrationForm.addEventListener('submit', (e) => {
-        const password = document.getElementById('password')?.value;
-        const confirmPassword = document.getElementById('confirm_password')?.value;
-        const teacherPassword = document.getElementById('teacher_password')?.value;
-        const teacherConfirmPassword = document.getElementById('teacher_confirm_password')?.value;
-        
-        if (roleInput.value === 'student' && password && confirmPassword && password !== confirmPassword) {
-          e.preventDefault();
-          alert('Passwords do not match!');
-          return;
-        }
-        
-        if (roleInput.value === 'teacher' && teacherPassword && teacherConfirmPassword && teacherPassword !== teacherConfirmPassword) {
-          e.preventDefault();
-          alert('Passwords do not match!');
-          return;
-        }
-      });
     });
+  }
+
+    togglePassword('togglePassword', 'password');
+    togglePassword('toggleConfirmPassword', 'confirm_password');
+
+    const form = document.getElementById('registrationForm');
+    form.addEventListener('submit', (e) => {
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm_password').value;
+
+      if (password !== confirmPassword) {
+        e.preventDefault();
+        alert('Passwords do not match!');
+      }
+    });
+  });
+
+
   </script>
 </body>
 </html>

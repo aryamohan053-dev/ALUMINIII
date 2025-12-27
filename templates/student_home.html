@@ -787,17 +787,17 @@
         </div>
         <ul class="nav flex-column">
           <li class="nav-item">
-            <a class="nav-link active" href="{% url 'dashboard' %}">
+            <a class="nav-link active" href="{% url 'pages:student_home' %}">
               <i class="fas fa-tachometer-alt"></i> Dashboard
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'profile' %}">
+            <a class="nav-link" href="{% url 'pages:profile' %}">
               <i class="fas fa-user-circle"></i> Profile
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'memory_gallery' %}">
+            <a class="nav-link" href="{% url 'pages:memory_gallery' %}">
               <i class="fas fa-images"></i> Memory Gallery
             </a>
           </li>
@@ -807,13 +807,13 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'notifications' %}">
+            <a class="nav-link" href="{% url 'pages:notifications' %}">
               <i class="fas fa-bell"></i> Notifications
               <span class="badge">3</span>
             </a>
           </li>
           <li class="nav-item mt-4 pt-3 border-top">
-            <a class="nav-link" href="{% url 'logout' %}">
+            <a class="nav-link" href="{% url 'pages:logout' %}">
               <i class="fas fa-sign-out-alt"></i> Logout
             </a>
           </li>
@@ -851,7 +851,7 @@
                 <i class="fas fa-chevron-down"></i>
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user me-2"></i>Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'pages:profile' %}"><i class="fas fa-user me-2"></i>Profile</a></li>
                 <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>

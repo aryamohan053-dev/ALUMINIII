@@ -16,14 +16,16 @@ urlpatterns = [
     path('forgot-password/', views.forgot_password_view, name='forgot_password'),
 
     # 📊 Dashboard
-    path('dashboard/', views.dashboard_view, name='dashboard'),
-    path('student-home/', views.student_home_view, name='student_home'),
-    path('staff-home/', views.staff_home_view, name='staff_home'),
+    path('dashboard/', views.dashboard_redirect, name='dashboard'),
+    path('dashboard/admin/', views.admin_dashboard, name='admin_dashboard'),
 
-    # 🧍 PUBLIC PROFILE (⚠️ MUST COME FIRST)
+    # 🧑 Student Home
+    path('student-home/', views.student_home_view, name='student_home'),
+
+    # 🧍 PUBLIC PROFILE (OTHER USERS)
     path('profile/<int:user_id>/', views.public_profile_view, name='public_profile'),
 
-    # 🧍 PRIVATE PROFILE
+    # 🧍 PRIVATE PROFILE (LOGGED-IN USER)
     path('profile/', views.profile_view, name='profile'),
     path('profile/edit/', views.profile_edit_view, name='profile_edit'),
 
@@ -38,5 +40,13 @@ urlpatterns = [
     # 🔔 Notifications
     path('notifications/', views.notifications, name='notifications'),
 
-     path('staff/students/', students_list, name='students_list'),
+    # 👨‍🎓 Staff
+    path('staff/students/', students_list, name='students_list'),
+     path('students/', views.students_list, name='students'),
+    path('students/delete/<int:id>/', views.delete_student, name='delete_student'),
+    
+
+    
+    
+
 ]

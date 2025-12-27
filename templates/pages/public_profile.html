@@ -1,0 +1,689 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ profile_user.get_full_name }} | Student Profile{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --primary-color: #4f46e5;
+    --secondary-color: #7c3aed;
+    --accent-color: #06b6d4;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --bg-light: #f9fafb;
+    --bg-card: #ffffff;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --gradient-primary: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    --gradient-accent: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+  }
+  
+  .profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .profile-header {
+    background: var(--gradient-primary);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .profile-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+    border-radius: 50%;
+  }
+  
+  .profile-main {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .profile-avatar {
+    width: 180px;
+    height: 180px;
+    border-radius: 20px;
+    object-fit: cover;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    box-shadow: var(--shadow-lg);
+    background: var(--bg-card);
+  }
+  
+  .avatar-placeholder {
+    width: 180px;
+    height: 180px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .avatar-placeholder i {
+    font-size: 4rem;
+    color: white;
+  }
+  
+  .profile-info {
+    flex: 1;
+  }
+  
+  .profile-name {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: white;
+  }
+  
+  .profile-title {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 20px;
+    font-weight: 400;
+  }
+  
+  .profile-stats {
+    display: flex;
+    gap: 30px;
+    margin-top: 20px;
+  }
+  
+  .stat-item {
+    text-align: center;
+  }
+  
+  .stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: block;
+  }
+  
+  .stat-label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  /* Profile Content */
+  .profile-content {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 30px;
+  }
+  
+  /* Profile Sections */
+  .profile-section {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid #e5e7eb;
+  }
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f3f4f6;
+  }
+  
+  .section-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  
+  /* Info Grid */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .info-item {
+    margin-bottom: 20px;
+  }
+  
+  .info-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  
+  .info-value {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+  
+  .info-value a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .info-value a:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+  }
+  
+  /* Contact Info */
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    background: #f8fafc;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+  }
+  
+  .contact-item:hover {
+    transform: translateX(5px);
+    background: #f1f5f9;
+  }
+  
+  .contact-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-color);
+  }
+  
+  .contact-details h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  
+  .contact-details p {
+    margin: 5px 0 0;
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+  
+  /* Skills */
+  .skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+  }
+  
+  .skill-tag {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
+    color: var(--primary-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .skill-tag i {
+    font-size: 0.8rem;
+  }
+  
+  /* Back Button */
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 2px solid #e5e7eb;
+    padding: 12px 25px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-top: 30px;
+  }
+  
+  .back-button:hover {
+    background: #f3f4f6;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: var(--primary-color);
+  }
+  
+  /* Social Links */
+  .social-links {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  .social-link {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .social-link:hover {
+    transform: translateY(-3px);
+    color: white;
+  }
+  
+  .social-link.linkedin:hover {
+    background: #0077b5;
+  }
+  
+  .social-link.github:hover {
+    background: #333;
+  }
+  
+  .social-link.twitter:hover {
+    background: #1da1f2;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 992px) {
+    .profile-content {
+      grid-template-columns: 1fr;
+    }
+    
+    .profile-main {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .profile-stats {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .profile-header {
+      padding: 25px;
+    }
+    
+    .profile-name {
+      font-size: 2rem;
+    }
+    
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .profile-avatar, .avatar-placeholder {
+      width: 140px;
+      height: 140px;
+    }
+    
+    .profile-section {
+      padding: 20px;
+    }
+  }
+  
+  /* Animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .fade-in {
+    animation: fadeInUp 0.6s ease forwards;
+  }
+  
+  .fade-in-delay {
+    animation: fadeInUp 0.6s ease 0.2s forwards;
+    opacity: 0;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+  <!-- Profile Header -->
+  <div class="profile-header fade-in">
+    <div class="profile-main">
+      {% if student_profile.profile_photo %}
+        <img src="{{ student_profile.profile_photo.url }}" alt="{{ profile_user.get_full_name }}" class="profile-avatar">
+      {% else %}
+        <div class="avatar-placeholder">
+          <i class="fas fa-user-graduate"></i>
+        </div>
+      {% endif %}
+      
+      <div class="profile-info">
+        <h1 class="profile-name">{{ profile_user.get_full_name }}</h1>
+        
+        <div class="profile-title">
+          {% if student_profile.department %}
+            {{ student_profile.department }}
+            {% if student_profile.batch %} | Batch {{ student_profile.batch }}{% endif %}
+          {% else %}
+            Student
+          {% endif %}
+        </div>
+        
+        {% if student_profile.role and student_profile.current_company %}
+          <div class="profile-title">
+            {{ student_profile.role }} at {{ student_profile.current_company }}
+          </div>
+        {% endif %}
+        
+        {% if student_profile.location %}
+          <div class="profile-title">
+            <i class="fas fa-map-marker-alt me-2"></i>{{ student_profile.location }}
+          </div>
+        {% endif %}
+        
+        <div class="social-links">
+          {% if student_profile.linkedin %}
+            <a href="{{ student_profile.linkedin }}" target="_blank" class="social-link linkedin">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+          {% endif %}
+          {% if student_profile.github %}
+            <a href="{{ student_profile.github }}" target="_blank" class="social-link github">
+              <i class="fab fa-github"></i>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Profile Content -->
+  <div class="profile-content">
+    <!-- Left Column -->
+    <div>
+      <!-- Academic Information -->
+      <div class="profile-section fade-in-delay">
+        <div class="section-header">
+          <div class="section-icon">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <h2 class="section-title">Academic Information</h2>
+        </div>
+        
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Department</div>
+            <div class="info-value">
+              {% if student_profile.department %}
+                {{ student_profile.department }}
+              {% else %}
+                Not specified
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <div class="info-label">Batch</div>
+            <div class="info-value">
+              {% if student_profile.batch %}
+                {{ student_profile.batch }}
+              {% else %}
+                Not specified
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <div class="info-label">Roll Number</div>
+            <div class="info-value">
+              {% if student_profile.roll_number %}
+                {{ student_profile.roll_number }}
+              {% else %}
+                Not specified
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <div class="info-label">Year of Passing</div>
+            <div class="info-value">
+              {% if student_profile.year_of_passing %}
+                {{ student_profile.year_of_passing }}
+              {% else %}
+                Not specified
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Professional Information -->
+      {% if student_profile.current_company or student_profile.role or student_profile.experience_years %}
+      <div class="profile-section fade-in-delay" style="animation-delay: 0.3s">
+        <div class="section-header">
+          <div class="section-icon">
+            <i class="fas fa-briefcase"></i>
+          </div>
+          <h2 class="section-title">Professional Information</h2>
+        </div>
+        
+        <div class="info-grid">
+          {% if student_profile.current_company %}
+          <div class="info-item">
+            <div class="info-label">Current Company</div>
+            <div class="info-value">{{ student_profile.current_company }}</div>
+          </div>
+          {% endif %}
+          
+          {% if student_profile.role %}
+          <div class="info-item">
+            <div class="info-label">Role/Position</div>
+            <div class="info-value">{{ student_profile.role }}</div>
+          </div>
+          {% endif %}
+          
+          {% if student_profile.experience_years %}
+          <div class="info-item">
+            <div class="info-label">Experience</div>
+            <div class="info-value">{{ student_profile.experience_years }} year{{ student_profile.experience_years|pluralize }}</div>
+          </div>
+          {% endif %}
+          
+          {% if student_profile.industry %}
+          <div class="info-item">
+            <div class="info-label">Industry</div>
+            <div class="info-value">{{ student_profile.industry }}</div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+      
+      <!-- Bio/About -->
+      {% if student_profile.bio %}
+      <div class="profile-section fade-in-delay" style="animation-delay: 0.4s">
+        <div class="section-header">
+          <div class="section-icon">
+            <i class="fas fa-user"></i>
+          </div>
+          <h2 class="section-title">About</h2>
+        </div>
+        <div class="info-value" style="line-height: 1.6; white-space: pre-line;">
+          {{ student_profile.bio }}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    
+    <!-- Right Column -->
+    <div>
+      <!-- Contact Information -->
+      <div class="profile-section fade-in-delay" style="animation-delay: 0.5s">
+        <div class="section-header">
+          <div class="section-icon">
+            <i class="fas fa-address-card"></i>
+          </div>
+          <h2 class="section-title">Contact Information</h2>
+        </div>
+        
+        <div class="contact-info">
+          {% if profile_user.email %}
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div class="contact-details">
+              <h4>Email</h4>
+              <p>{{ profile_user.email }}</p>
+            </div>
+          </div>
+          {% endif %}
+          
+          {% if student_profile.phone %}
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-phone"></i>
+            </div>
+            <div class="contact-details">
+              <h4>Phone</h4>
+              <p>{{ student_profile.phone }}</p>
+            </div>
+          </div>
+          {% endif %}
+          
+          {% if student_profile.location %}
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="contact-details">
+              <h4>Location</h4>
+              <p>{{ student_profile.location }}</p>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      
+      <!-- Skills -->
+      {% if student_profile.skills %}
+      <div class="profile-section fade-in-delay" style="animation-delay: 0.6s">
+        <div class="section-header">
+          <div class="section-icon">
+            <i class="fas fa-tools"></i>
+          </div>
+          <h2 class="section-title">Skills & Expertise</h2>
+        </div>
+        <div class="skills-container">
+          {% for skill in student_profile.skills_list %}
+            <span class="skill-tag">
+              <i class="fas fa-check-circle"></i>{{ skill }}
+            </span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  
+  <!-- Back Button -->
+  <a href="{% url 'pages:memory_gallery' %}" class="back-button">
+    <i class="fas fa-arrow-left"></i>
+    Back to Gallery
+  </a>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add smooth scrolling to sections
+    const sections = document.querySelectorAll('.profile-section');
+    sections.forEach(section => {
+      section.addEventListener('click', () => {
+        section.style.transform = 'scale(0.99)';
+        setTimeout(() => {
+          section.style.transform = 'scale(1)';
+        }, 150);
+      });
+    });
+    
+    // Add animation on scroll
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+    
+    // Observe all profile sections
+    sections.forEach(section => {
+      section.style.opacity = '0';
+      section.style.transform = 'translateY(20px)';
+      section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(section);
+    });
+  });
+</script>
+{% endblock %}

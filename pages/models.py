@@ -18,7 +18,6 @@ class StaffProfile(models.Model):
         return f"{self.user.username} - {self.designation}"
 
 
-
 # ================= Student Profile =================
 class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -31,14 +30,11 @@ class StudentProfile(models.Model):
     role = models.CharField(max_length=100, blank=True, null=True)
     experience_years = models.IntegerField(blank=True, null=True)
     profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
-    
-    # ADD THIS
     location = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
 
-    
     @property
     def batch_year(self):
         return self.year_of_passing
@@ -53,28 +49,25 @@ class AdminProfile(models.Model):
         return self.user.username
 
 
-# ================= User Profile =================
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.TextField(blank=True)
-
-    def __str__(self):
-        return self.user.username
+# ================= Memory (Gallery) =================
 
 
-# ================= Memory (for Gallery) =================
 class Memory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     description = models.TextField()
     image = models.ImageField(upload_to='memories/', blank=True, null=True)
     date_posted = models.DateTimeField(auto_now_add=True)
+    is_approved = models.BooleanField(default=False)  # optional if using admin approval
 
     def __str__(self):
         return self.title
-    
-    
 
+
+
+
+
+# ================= Fund & Donation =================
 class Fund(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
@@ -94,9 +87,9 @@ class Donation(models.Model):
 
     def __str__(self):
         return f"{self.user} donated ₹{self.amount} to {self.fund}"
-    
-    
 
+
+# ================= Notification =================
 class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
     title = models.CharField(max_length=255)
@@ -106,8 +99,9 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.user.username}"
-    
-    # ================= Registered Students =================
+
+
+# ================= Departments & Students =================
 class Department(models.Model):
     name = models.CharField(max_length=100)
 
@@ -117,19 +111,16 @@ class Department(models.Model):
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    department = models.ForeignKey(
-        Department,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
-    )
-    year = models.CharField(max_length=10)   # e.g., "2025"
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
+    year = models.CharField(max_length=10)
     is_active = models.BooleanField(default=True)
     registered_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.user.username
-    
+
+
+# ================= Alumni =================
 class Alumni(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     graduation_year = models.IntegerField(blank=True, null=True)
@@ -137,10 +128,22 @@ class Alumni(models.Model):
     current_company = models.CharField(max_length=100, blank=True, null=True)
     role = models.CharField(max_length=100, blank=True, null=True)
     profile_photo = models.ImageField(upload_to='alumni_photos/', blank=True, null=True)
+    is_blocked = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username
-    
+
+
+class VerifiedAlumni(models.Model):
+    alumni = models.OneToOneField(Alumni, on_delete=models.CASCADE, related_name='verification')
+    is_verified = models.BooleanField(default=False)
+    verified_date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.alumni.user.username} - Verified: {self.is_verified}"
+
+
+# ================= Event =================
 class Event(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
@@ -154,6 +157,12 @@ class Event(models.Model):
         return self.title
 
 
+# ================= Registered Students =================
+class RegisteredStudent(models.Model):
+    name = models.CharField(max_length=100)
+    register_no = models.CharField(max_length=20, unique=True)
+    department = models.CharField(max_length=100)
+    admission_year = models.IntegerField()
 
-    
-    
+    def __str__(self):
+        return self.name

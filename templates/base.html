@@ -37,7 +37,8 @@
   <nav class="navbar navbar-expand-lg bg-white shadow-sm">
     <div class="container-main">
 
-      <a class="navbar-brand" href="{% url 'dashboard' %}">
+      <a class="navbar-brand" href="{% url 'pages:student_home' %}">
+
         <i class="fas fa-graduation-cap me-2"></i> Alumni Connect
       </a>
 
@@ -51,31 +52,31 @@
           {% if user.is_authenticated %}
 
             <!-- Dashboard Button -->
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'dashboard' %}">
-                <i class="fa-solid fa-house me-1"></i> Dashboard
-              </a>
-            </li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'pages:student_home' %}">
+    <i class="fa-solid fa-house me-1"></i> Dashboard
+  </a>
+</li>
 
-            <!-- Profile Dropdown -->
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                <i class="fa-solid fa-user me-1"></i>
-                {{ user.get_short_name|default:user.username }}
-              </a>
+<!-- Profile Dropdown -->
+<li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+    <i class="fa-solid fa-user me-1"></i>
+    {{ user.get_short_name|default:user.username }}
+  </a>
 
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="{% url 'profile' %}">
-                  <i class="fa-solid fa-id-card me-2"></i> My Profile
-                </a></li>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><a class="dropdown-item" href="{% url 'pages:profile' %}">
+      <i class="fa-solid fa-id-card me-2"></i> My Profile
+    </a></li>
 
-                <li><hr class="dropdown-divider"></li>
+    <li><hr class="dropdown-divider"></li>
 
-                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">
-                  <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
-                </a></li>
-              </ul>
-            </li>
+    <li><a class="dropdown-item text-danger" href="{% url 'pages:logout' %}">
+      <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+    </a></li>
+  </ul>
+</li>
 
           {% else %}
 

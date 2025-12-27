@@ -1,4 +1,3 @@
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -325,9 +324,18 @@
             box-shadow: var(--shadow-lg);
         }
         
-        .memory-image {
+        .memory-image-container {
+            position: relative;
             width: 100%;
             height: 250px;
+            overflow: hidden;
+            cursor: pointer;
+            background: linear-gradient(135deg, #f5f7fb 0%, #e9ecef 100%);
+        }
+        
+        .memory-image {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             transition: transform 0.5s ease;
         }
@@ -345,10 +353,58 @@
             background: linear-gradient(to bottom, transparent 60%, rgba(0, 0, 0, 0.7));
             opacity: 0;
             transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .memory-card:hover .image-overlay {
             opacity: 1;
+        }
+        
+        .fullscreen-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2d3748;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        
+        .memory-card:hover .fullscreen-btn {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .fullscreen-btn:hover {
+            background: white;
+            transform: scale(1.1) !important;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .no-image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #718096;
+            background: #f8f9fa;
+        }
+        
+        .no-image-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #cbd5e0;
         }
         
         .memory-content {
@@ -378,6 +434,20 @@
             transform: scale(1.1);
             border-color: #764ba2;
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .avatar-placeholder {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            border: 3px solid white;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
         }
         
         .memory-meta {
@@ -493,6 +563,78 @@
             text-decoration: none;
         }
         
+        /* Full Screen Modal */
+        .fullscreen-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .fullscreen-image {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .close-fullscreen {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .close-fullscreen:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+        
+        .image-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .image-control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .image-control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
         /* Empty State */
         .empty-state {
             text-align: center;
@@ -549,6 +691,15 @@
         }
         
         /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -594,7 +745,8 @@
                         <p>Relive the moments, share the memories</p>
                     </div>
                 </div>
-                <a href="{% url 'dashboard' %}" class="back-btn">
+                <a href="{% url 'pages:dashboard' %}" class="back-btn">
+
                     <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
                 </a>
             </div>
@@ -682,8 +834,8 @@
                             <input type="file" class="file-input" id="image" name="image" accept="image/*" onchange="previewImage(this)">
                         </div>
                     {% endif %}
-                    <div class="image-preview" id="imagePreview">
-                        <img src="" alt="Preview">
+                    <div class="image-preview mt-3" id="imagePreview">
+                        <img src="" alt="Preview" class="preview-image">
                     </div>
                 </div>
                 
@@ -698,56 +850,67 @@
         <div class="gallery-grid">
             {% for memory in memories %}
             <div class="memory-card fade-in">
-                <div class="memory-image-container">
-                    {% if memory.image %}
-                    <img src="{{ memory.image.url }}" alt="{{ memory.title }}" class="memory-image">
+                <!-- Clickable Image Container -->
+                <div class="memory-image-container" 
+                     onclick="openFullscreen('{% if memory.image and memory.image.url %}{{ memory.image.url }}{% else %}{% static 'images/default-memory.jpg' %}{% endif %}', '{{ memory.title }}')">
+                    {% if memory.image and memory.image.url %}
+                        <img src="{{ memory.image.url }}" alt="{{ memory.title }}" class="memory-image">
                     {% else %}
-                    <img src="{% static 'images/default-memory.jpg' %}" alt="Memory" class="memory-image">
+                        <div class="no-image-placeholder">
+                            <div class="no-image-icon">
+                                <i class="fas fa-image"></i>
+                            </div>
+                            <p>No Image Available</p>
+                        </div>
                     {% endif %}
-                    <div class="image-overlay"></div>
+                    <div class="image-overlay">
+                        <button class="fullscreen-btn" 
+                                onclick="event.stopPropagation(); openFullscreen('{% if memory.image and memory.image.url %}{{ memory.image.url }}{% else %}{% static 'images/default-memory.jpg' %}{% endif %}', '{{ memory.title }}')">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="memory-content">
                     <div class="memory-header">
                         <!-- User Profile Link - Avatar -->
-                        {% if memory.user.id %}
-                        <a href="{% url 'public_profile' memory.user.id %}" class="profile-link">
-                            {% if memory.user.studentprofile %}
-                                {% if memory.user.studentprofile.profile_photo %}
-                                <img src="{{ memory.user.studentprofile.profile_photo.url }}" alt="{{ memory.user.get_full_name }}" class="user-avatar">
+                        {% if memory.user and memory.user.id %}
+                            <a href="{% url 'pages:public_profile' memory.user.id %}" class="profile-link">
+                                {% if memory.user.studentprofile and memory.user.studentprofile.profile_photo %}
+                                    <img src="{{ memory.user.studentprofile.profile_photo.url }}" alt="{{ memory.user.get_full_name }}" class="user-avatar">
+                                {% elif memory.user.staffprofile and memory.user.staffprofile.profile_photo %}
+                                    <img src="{{ memory.user.staffprofile.profile_photo.url }}" alt="{{ memory.user.get_full_name }}" class="user-avatar">
                                 {% else %}
-                                <div class="user-avatar d-flex align-items-center justify-content-center bg-light">
-                                    <i class="fas fa-user-graduate text-muted"></i>
-                                </div>
+                                    <div class="avatar-placeholder">
+                                        {% if memory.user.studentprofile %}
+                                            <i class="fas fa-user-graduate"></i>
+                                        {% elif memory.user.staffprofile %}
+                                            <i class="fas fa-user-tie"></i>
+                                        {% else %}
+                                            <i class="fas fa-user"></i>
+                                        {% endif %}
+                                    </div>
                                 {% endif %}
-                            {% elif memory.user.staffprofile %}
-                                {% if memory.user.staffprofile.profile_photo %}
-                                <img src="{{ memory.user.staffprofile.profile_photo.url }}" alt="{{ memory.user.get_full_name }}" class="user-avatar">
-                                {% else %}
-                                <div class="user-avatar d-flex align-items-center justify-content-center bg-light">
-                                    <i class="fas fa-user-tie text-muted"></i>
-                                </div>
-                                {% endif %}
-                            {% else %}
-                                <div class="user-avatar d-flex align-items-center justify-content-center bg-light">
-                                    <i class="fas fa-user text-muted"></i>
-                                </div>
-                            {% endif %}
-                        </a>
+                            </a>
+                        {% else %}
+                            <div class="avatar-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>
                         {% endif %}
                         
                         <div class="memory-meta">
                             <!-- User Profile Link - Name -->
-                            {% if memory.user.id %}
-                            <a href="{% url 'public_profile' memory.user.id %}" class="profile-link">
-                                <div class="memory-author">
-                                    {{ memory.user.get_full_name|default:memory.user.username }}
-                                </div>
-                            </a>
+                            {% if memory.user and memory.user.id %}
+                               <a href="{% url 'pages:public_profile' memory.user.id %}" class="profile-link">
+
+                                    <div class="memory-author">
+                                        {{ memory.user.get_full_name|default:memory.user.username }}
+                                    </div>
+                                </a>
                             {% else %}
-                            <div class="memory-author">
-                                {{ memory.user.get_full_name|default:memory.user.username }}
-                            </div>
+                                <div class="memory-author">
+                                    {{ memory.user.get_full_name|default:memory.user.username|default:"Unknown User" }}
+                                </div>
                             {% endif %}
                             
                             <div class="memory-date">
@@ -768,22 +931,33 @@
                     <div class="memory-actions">
                         <div class="action-buttons">
                             <button class="action-btn like-btn" data-memory-id="{{ memory.id }}">
-                                <i class="fas fa-heart"></i>
-                                <span>Like</span>
+                                
                                 {% if memory.likes %}
                                 <span class="like-count ms-1">{{ memory.likes }}</span>
                                 {% endif %}
                             </button>
-                            <button class="action-btn comment-btn">
-                                <i class="fas fa-comment"></i>
-                                <span>Comment</span>
+                            <button class="action-btn" 
+                                    onclick="openFullscreen('{% if memory.image and memory.image.url %}{{ memory.image.url }}{% else %}{% static 'images/default-memory.jpg' %}{% endif %}', '{{ memory.title }}')">
+                                
+                                
                             </button>
                         </div>
                         
-                        <!-- View Memory Button -->
-                        <a href="{% url 'memory_detail' memory.id %}" class="view-btn">
-                            <i class="fas fa-eye me-2"></i>View Full
-                        </a>
+                        <!-- View Memory Detail Button -->
+                        
+                           {% if memory.user and memory.user.id %}
+    <a href="{% url 'pages:public_profile' memory.user.id %}" class="view-btn">
+        <i class="fas fa-user"></i>
+        View Profile
+    </a>
+{% else %}
+    <span class="view-btn" style="opacity: 0.5; cursor: not-allowed;">
+        <i class="fas fa-user-slash"></i>
+        Profile Unavailable
+    </span>
+{% endif %}
+
+                        
                     </div>
                 </div>
             </div>
@@ -802,6 +976,28 @@
             </button>
         </div>
         {% endif %}
+    </div>
+    
+    <!-- Full Screen Modal -->
+    <div class="fullscreen-modal" id="fullscreenModal">
+        <button class="close-fullscreen" onclick="closeFullscreen()">
+            <i class="fas fa-times"></i>
+        </button>
+        <img src="" alt="" class="fullscreen-image" id="fullscreenImage">
+        <div class="image-controls">
+            <button class="image-control-btn" onclick="zoomIn()">
+                <i class="fas fa-search-plus"></i>
+            </button>
+            <button class="image-control-btn" onclick="zoomOut()">
+                <i class="fas fa-search-minus"></i>
+            </button>
+            <button class="image-control-btn" onclick="rotateImage()">
+                <i class="fas fa-redo"></i>
+            </button>
+            <button class="image-control-btn" onclick="downloadImage()">
+                <i class="fas fa-download"></i>
+            </button>
+        </div>
     </div>
 
     <script>
@@ -893,132 +1089,118 @@
                     // Toggle like state
                     if (this.classList.contains('liked')) {
                         this.classList.remove('liked');
-                        this.innerHTML = '<i class="fas fa-heart"></i><span>Like</span>';
+                        this.querySelector('i').className = 'fas fa-heart';
+                        this.querySelector('span').textContent = 'Like';
                     } else {
                         this.classList.add('liked');
-                        this.innerHTML = '<i class="fas fa-heart text-danger"></i><span>Liked</span>';
+                        this.querySelector('i').className = 'fas fa-heart text-danger';
+                        this.querySelector('span').textContent = 'Liked';
                         this.style.background = '#667eea';
                         this.style.borderColor = '#667eea';
                         this.style.color = 'white';
                     }
-                    
-                    // In a real app, you would send an AJAX request here
-                    // fetch(`/memories/${memoryId}/like/`, {
-                    //     method: 'POST',
-                    //     headers: {
-                    //         'X-CSRFToken': '{{ csrf_token }}',
-                    //     }
-                    // });
                 });
             });
             
-            // Comment button functionality
-            const commentButtons = document.querySelectorAll('.comment-btn');
-            commentButtons.forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    // Focus on comment input if it exists
-                    const commentInput = this.closest('.memory-card').querySelector('.comment-input');
-                    if (commentInput) {
-                        commentInput.focus();
-                    }
-                });
-            });
+            // Initialize image rotation and zoom
+            let currentRotation = 0;
+            let currentScale = 1;
+            let currentImageUrl = '';
             
-            // Drag and drop file upload
-            const fileUploadLabel = document.querySelector('.file-upload-label');
-            if (fileUploadLabel) {
-                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                    fileUploadLabel.addEventListener(eventName, preventDefaults, false);
-                });
-                
-                function preventDefaults(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
+            window.rotateImage = function() {
+                currentRotation += 90;
+                document.getElementById('fullscreenImage').style.transform = `rotate(${currentRotation}deg) scale(${currentScale})`;
+            };
+            
+            window.zoomIn = function() {
+                currentScale += 0.2;
+                document.getElementById('fullscreenImage').style.transform = `rotate(${currentRotation}deg) scale(${currentScale})`;
+            };
+            
+            window.zoomOut = function() {
+                if (currentScale > 0.3) {
+                    currentScale -= 0.2;
+                    document.getElementById('fullscreenImage').style.transform = `rotate(${currentRotation}deg) scale(${currentScale})`;
                 }
-                
-                ['dragenter', 'dragover'].forEach(eventName => {
-                    fileUploadLabel.addEventListener(eventName, highlight, false);
-                });
-                
-                ['dragleave', 'drop'].forEach(eventName => {
-                    fileUploadLabel.addEventListener(eventName, unhighlight, false);
-                });
-                
-                function highlight() {
-                    fileUploadLabel.style.borderColor = '#667eea';
-                    fileUploadLabel.style.background = '#edf2f7';
+            };
+            
+            window.downloadImage = function() {
+                if (currentImageUrl) {
+                    const link = document.createElement('a');
+                    link.href = currentImageUrl;
+                    link.download = 'memory.jpg';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
                 }
+            };
+        });
+        
+        // Open fullscreen modal
+        window.openFullscreen = function(imageUrl, imageAlt) {
+            const fullscreenModal = document.getElementById('fullscreenModal');
+            const fullscreenImage = document.getElementById('fullscreenImage');
+            
+            if (fullscreenModal && fullscreenImage) {
+                fullscreenImage.src = imageUrl;
+                fullscreenImage.alt = imageAlt || 'Memory Image';
+                fullscreenModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
                 
-                function unhighlight() {
-                    if (!document.querySelector('#image').files.length) {
-                        fileUploadLabel.style.borderColor = '#e2e8f0';
-                        fileUploadLabel.style.background = '#f7fafc';
-                    }
-                }
+                // Store current image URL for download
+                currentImageUrl = imageUrl;
                 
-                fileUploadLabel.addEventListener('drop', handleDrop, false);
+                // Reset transformations
+                currentRotation = 0;
+                currentScale = 1;
+                fullscreenImage.style.transform = 'scale(1) rotate(0deg)';
                 
-                function handleDrop(e) {
-                    const dt = e.dataTransfer;
-                    const files = dt.files;
-                    const input = document.getElementById('image');
-                    
-                    input.files = files;
-                    previewImage(input);
-                }
+                // Add keyboard shortcuts
+                document.addEventListener('keydown', handleFullscreenKeyboard);
             }
-            
-            // Auto-resize textarea
-            const textarea = form ? form.querySelector('textarea') : null;
-            if (textarea) {
-                textarea.addEventListener('input', function() {
-                    this.style.height = 'auto';
-                    this.style.height = (this.scrollHeight) + 'px';
-                });
+        };
+        
+        // Close fullscreen modal
+        window.closeFullscreen = function() {
+            const fullscreenModal = document.getElementById('fullscreenModal');
+            if (fullscreenModal) {
+                fullscreenModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
                 
-                // Trigger resize on page load
-                setTimeout(() => {
-                    textarea.style.height = 'auto';
-                    textarea.style.height = (textarea.scrollHeight) + 'px';
-                }, 100);
+                // Remove keyboard shortcuts
+                document.removeEventListener('keydown', handleFullscreenKeyboard);
             }
-            
-            // Profile hover effects
-            const profileLinks = document.querySelectorAll('.profile-link');
-            profileLinks.forEach(link => {
-                link.addEventListener('mouseenter', function() {
-                    const avatar = this.querySelector('.user-avatar');
-                    const name = this.querySelector('.memory-author');
-                    if (avatar) avatar.style.transform = 'scale(1.1)';
-                    if (name) name.style.color = '#667eea';
-                });
-                
-                link.addEventListener('mouseleave', function() {
-                    const avatar = this.querySelector('.user-avatar');
-                    const name = this.querySelector('.memory-author');
-                    if (avatar) avatar.style.transform = 'scale(1)';
-                    if (name) name.style.color = '#2d3748';
-                });
-            });
-            
-            // Memory card hover effects
-            const memoryCards = document.querySelectorAll('.memory-card');
-            memoryCards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    const avatar = this.querySelector('.user-avatar');
-                    const name = this.querySelector('.memory-author');
-                    if (avatar) avatar.style.borderColor = '#764ba2';
-                    if (name) name.style.transform = 'translateX(3px)';
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    const avatar = this.querySelector('.user-avatar');
-                    const name = this.querySelector('.memory-author');
-                    if (avatar) avatar.style.borderColor = '#667eea';
-                    if (name) name.style.transform = 'translateX(0)';
-                });
-            });
+        };
+        
+        // Keyboard shortcuts for fullscreen mode
+        function handleFullscreenKeyboard(e) {
+            switch(e.key) {
+                case 'Escape':
+                    closeFullscreen();
+                    break;
+                case 'ArrowRight':
+                    rotateImage();
+                    break;
+                case '+':
+                case '=':
+                    zoomIn();
+                    break;
+                case '-':
+                    zoomOut();
+                    break;
+                case 'd':
+                case 'D':
+                    downloadImage();
+                    break;
+            }
+        }
+        
+        // Prevent right-click on images
+        document.addEventListener('contextmenu', function(e) {
+            if (e.target.classList.contains('memory-image') || 
+                e.target.classList.contains('fullscreen-image')) {
+                e.preventDefault();
+            }
         });
     </script>
 </body>

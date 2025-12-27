@@ -1,0 +1,17 @@
+{% for student in students %}
+<tr>
+  <td>{{ student.user.username }}</td>
+  <td>{{ student.department }}</td>
+  <td>{{ student.user.studentprofile.year_of_passing }}</td>
+
+  <td>
+    {% if student.user.alumni %}
+      <span class="badge bg-success">Alumni</span>
+    {% else %}
+      <a href="{% url 'mark_alumni' student.id %}" class="btn btn-sm btn-primary">
+        Mark as Alumni
+      </a>
+    {% endif %}
+  </td>
+</tr>
+{% endfor %}
